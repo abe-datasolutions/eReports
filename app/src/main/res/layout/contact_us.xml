@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <ImageView
+        android:id="@+id/contactLogo"
+        android:layout_width="203dp"
+        android:layout_height="90dp"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/company"
+        android:src="@drawable/logo_default" />
+
+    <WebView
+        android:id="@+id/contactUsView"
+        android:layout_below="@+id/contactLogo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+</RelativeLayout>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/findRptResultFindRelated" android:title="Find Related Report"></item>
+    <item android:id="@+id/findRptResultDownload" android:title="Download Report"></item>
+    
+
+</menu>

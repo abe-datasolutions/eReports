@@ -1,0 +1,103 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_main"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.abclab.abcereports.UserLoginActivity" >
+
+    <EditText
+        android:id="@+id/usrLogInTxtUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="140dp"
+        android:ems="10"
+        android:hint="@string/username"
+        android:inputType="text" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/usrLogInTxtPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/usrLogInTxtUsername"
+        android:layout_alignRight="@+id/usrLogInTxtUsername"
+        android:layout_below="@+id/usrLogInTxtUsername"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword" />
+
+    <Button
+        android:id="@+id/usrLogInBtnLogIn"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/usrLogInTxtPassword"
+        android:layout_alignRight="@+id/usrLogInTxtPassword"
+        android:layout_below="@+id/usrLogInTxtPassword"
+        android:text="@string/LogIn" />
+
+    <ImageView
+        android:id="@+id/usrLogInLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/logo_default"
+        android:contentDescription="@string/company" />
+
+    
+    <TextView
+        android:id="@+id/usrLogIntTxtRefCtr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usrLogInBtnLogIn"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:text="" />
+    
+    <ImageButton
+        android:id="@+id/usrLogInBtnReports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usrLogInBtnLogIn"
+        android:layout_toLeftOf="@+id/usrLogIntTxtRefCtr"
+        android:contentDescription="@string/btnReports"
+        android:src="@drawable/btn_main_reports" />
+
+    <ImageButton
+        android:id="@+id/usrLogInBtnTests"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/usrLogInBtnReports"
+        android:layout_below="@+id/usrLogInBtnLogIn"
+        android:contentDescription="@string/btnTests"
+        android:src="@drawable/btn_main_tests" />
+
+    <ImageButton
+        android:id="@+id/usrLogInBtnContactUs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/usrLogInBtnReports"
+        android:layout_below="@+id/usrLogInBtnReports"
+        android:contentDescription="@string/btnContact"
+        android:src="@drawable/btn_main_contact" />
+
+    <ImageButton
+        android:id="@+id/usrLogInBtnAboutUs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/usrLogInBtnTests"
+        android:layout_below="@+id/usrLogInBtnTests"
+        android:contentDescription="@string/btnAbout"
+        android:src="@drawable/btn_main_about" />
+
+</RelativeLayout>

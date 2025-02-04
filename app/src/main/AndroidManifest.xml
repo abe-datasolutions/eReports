@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.abclab.abcereports"
+    android:versionCode="7"
+    android:versionName="1.7" xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+	<uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    
+    <application
+        android:name="com.abclab.abcereports.GlobalClass"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_foreground"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
+
+        <activity
+            android:name="com.abclab.abcereports.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name" 
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="com.abclab.abcereports.TabHostActivity"
+            android:screenOrientation="portrait"/>
+<!--        <activity android:name="com.abclab.abcereports.ReportFinalActivity"/>-->
+<!--        <activity android:name="com.abclab.abcereports.ReportPendingActivity"/>-->
+<!--        <activity android:name="com.abclab.abcereports.ReportFindActivity"/>-->
+        <activity android:name="com.abclab.abcereports.ReportFindResultActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.CacheListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.AboutUsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.ContactUsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.TestListActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.TestDetailsActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        <activity android:name="com.abclab.abcereports.UserLoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        
+    </application>
+    
+</manifest>

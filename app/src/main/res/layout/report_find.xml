@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dip" >
+
+    <TextView
+        android:id="@+id/lblFindRptRptNo"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dip"
+        android:text="Report No"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/txtFindRptRptNo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblFindRptRptNo"
+        android:layout_toRightOf="@+id/lblFindRptRptNo"
+        android:ems="10"
+        android:inputType="number" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/lblFindPatName"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtFindRptRptNo"
+        android:layout_marginTop="15dip"
+        android:text="Patient Name"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <EditText
+        android:id="@+id/txtFindRptPatName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblFindPatName"
+        android:layout_toRightOf="@+id/lblFindPatName"
+        android:ems="10"
+        android:inputType="textPersonName" >
+    </EditText>
+
+    <TextView
+        android:id="@+id/lblFindGender"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txtFindRptPatName"
+        android:layout_marginTop="15dip"
+        android:text="Gender"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <RadioGroup
+        android:id="@+id/radFindRptGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/lblFindGender"
+        android:layout_toRightOf="@+id/lblFindGender"
+        android:layout_centerHorizontal="true" >
+
+        <RadioButton
+            android:id="@+id/radFindRptGenderAny"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Any" />
+
+        <RadioButton
+            android:id="@+id/radFindRptMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Male" />
+
+        <RadioButton
+            android:id="@+id/radFindRptGenderFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Female" />
+    </RadioGroup>
+    <TextView
+        android:id="@+id/lblFindRptDateFrom"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radFindRptGender"
+        android:layout_marginTop="15dip"
+        android:text="Date From"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <EditText
+        android:id="@+id/txtFindRptDateFrom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblFindRptDateFrom"
+        android:layout_toRightOf="@+id/lblFindRptDateFrom"
+        android:ems="10"
+        android:inputType="none">
+    </EditText>
+    
+    <Button
+        android:id="@+id/btnFindRptDateFromClear"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="30dip"
+        android:layout_height="30dip"
+        android:layout_alignBottom="@+id/lblFindRptDateFrom"
+        android:layout_alignParentRight="true"
+		android:layout_marginRight="5dip"
+		android:layout_marginBottom="7dip"
+		android:background="@drawable/btn_close"/>
+    <TextView
+        android:id="@+id/lblFindRptDateTo"
+        android:layout_width="130dip"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lblFindRptDateFrom"
+        android:layout_marginTop="15dip"
+        android:text="Date To"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    
+    <EditText
+        android:id="@+id/txtFindRptDateTo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblFindRptDateTo"
+        android:layout_toRightOf="@+id/lblFindRptDateTo"
+        android:ems="10"
+        android:inputType="none">
+    </EditText>
+    <Button
+        android:id="@+id/btnFindRptDateToClear"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="30dip"
+        android:layout_height="30dip"
+        android:layout_alignBottom="@+id/lblFindRptDateTo"
+        android:layout_alignParentRight="true"
+		android:layout_marginRight="5dip"
+		android:layout_marginBottom="7dip"
+		android:background="@drawable/btn_close"/>
+
+    <Button
+        android:id="@+id/btnFindRptSearch"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnFindRptDateToClear"
+        android:layout_marginTop="10dip"
+        android:text="Search" />
+    <Button
+        android:id="@+id/btnFindRptResetFilter"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/btnFindRptSearch"
+        android:text="Reset Filter" />
+
+</RelativeLayout>
