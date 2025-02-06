@@ -136,9 +136,9 @@ class ReportFindActivity : Fragment() {
         txtDateTo!!.setText("")
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(getString(R.string.tag), "Application Exit")
-        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
             val patName = data.getStringExtra("PATNAME")
             if (patName.length > 0) {
                 txtPatientName!!.setText(patName)
