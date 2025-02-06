@@ -21,6 +21,10 @@ class GlobalClass : Application() {
      */
     @JvmField
 	var siteId: String? = null
+
+    /**
+     * UserName
+     */
     @JvmField
 	var userId: String? = null
     @JvmField
