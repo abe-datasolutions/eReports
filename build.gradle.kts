@@ -6,13 +6,13 @@ buildscript {
         mavenCentral()  // Maven Central repository
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.android.tools.build:gradle:8.8.1")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
     }
 }
 
 plugins {
-    id("com.android.application") version "7.4.2" apply false
+    id("com.android.application") version "8.8.1" apply false
 }
 
 //allprojects {
