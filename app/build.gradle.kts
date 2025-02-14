@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 android {
+    namespace = "com.abclab.abcereports"
     compileSdk = 28
     useLibrary("org.apache.http.legacy")
     defaultConfig {
