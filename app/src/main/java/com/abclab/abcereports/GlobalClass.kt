@@ -114,21 +114,21 @@ class GlobalClass : Application() {
 
     val about: String
         get() {
-            val res = when(BuildConfig.PREF_COUNTRY){
-                "PH" -> R.string.aboutUsMLA
-                "ID" -> R.string.aboutUsJKT
-                else -> R.string.aboutUsUS
-            }
-            return getString(res)
+//            val res = when(BuildConfig.PREF_COUNTRY){
+//                "PH" -> R.string.aboutUsMLA
+//                "ID" -> R.string.aboutUsJKT
+//                else -> R.string.aboutUsUS
+//            }
+            return getString(R.string.aboutUs)
         }
     val contact: String
         get() {
-            val res = when(BuildConfig.PREF_COUNTRY){
-                "PH" -> R.string.contactUsMLA
-                "ID" -> R.string.contactUsJKT
-                else -> R.string.contactUsUS
-            }
-            return getString(res)
+//            val res = when(BuildConfig.PREF_COUNTRY){
+//                "PH" -> R.string.contactUsMLA
+//                "ID" -> R.string.contactUsJKT
+//                else -> R.string.contactUsUS
+//            }
+            return getString(R.string.contactUs)
         }
 
     val dateFormat: String
