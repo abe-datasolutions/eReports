@@ -40,14 +40,16 @@ class GlobalClass : Application() {
 
     @JvmField
 	var permissions: Array<String> = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE, //TODO: Remove?
         Manifest.permission.REORDER_TASKS,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     @JvmField
-	val rptStorage: String = Environment.getExternalStorageDirectory().toString() + "/ABC/eReport"
+	val rptStorage: String = Environment.getExternalStoragePublicDirectory(
+        Environment.DIRECTORY_DOCUMENTS
+    ).toString() + "/ABC/eReport"
 
     fun getSharedString(pref: String?): String {
         val settings = getSharedPreferences(PREFS_NAME, 0)
