@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.app.Application
 import android.app.ProgressDialog
 import android.content.Context
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import org.json.JSONArray
@@ -39,10 +40,11 @@ class GlobalClass : Application() {
 	var findReportFilters: FindReportFilters = FindReportFilters()
 
     @JvmField
-	var permissions: Array<String> = arrayOf(
-        Manifest.permission.WRITE_EXTERNAL_STORAGE, //TODO: Remove?
-        Manifest.permission.REORDER_TASKS,
-    )
+	var permissions: Array<String> = buildList {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S)
+            add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        add(Manifest.permission.REORDER_TASKS)
+    }.toTypedArray()
 
     @JvmField
 	val rptStorage: String = Environment.getExternalStoragePublicDirectory(
