@@ -139,8 +139,8 @@ class ReportFindActivity : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(getString(R.string.tag), "Application Exit")
         if (requestCode == 1 && resultCode == Activity.RESULT_OK && data != null) {
-            val patName = data.getStringExtra("PATNAME")
-            if (patName.length > 0) {
+            val patName = data.getStringExtra("PATNAME") ?: return
+            if (patName.isNotEmpty()) {
                 txtPatientName!!.setText(patName)
                 doSearch()
             }
@@ -165,7 +165,7 @@ class ReportFindActivity : Fragment() {
         }
 
         DatePickerDialog(
-            activity, onDateSel,
+            requireActivity(), onDateSel,
             calendar!![Calendar.YEAR], calendar!![Calendar.MONTH], calendar!![Calendar.DAY_OF_MONTH]
         ).show()
     }
