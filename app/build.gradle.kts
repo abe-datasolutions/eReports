@@ -4,13 +4,12 @@ plugins {
 }
 android {
     namespace = "com.abclab.abcereports"
-    compileSdk = 32
+    compileSdk = 34
     useLibrary("org.apache.http.legacy")
     defaultConfig {
         applicationId = "com.abclab.abcereports"
         minSdk = 21
-        //noinspection EditedTargetSdkVersion,ExpiredTargetSdkVersion
-        targetSdk = 32
+        targetSdk = 34
 
         buildConfigField(
             type = "int",
