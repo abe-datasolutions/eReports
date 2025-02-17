@@ -1,6 +1,5 @@
 package com.abclab.abcereports
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import android.view.ContextMenu
@@ -12,27 +11,29 @@ import android.view.ViewGroup
 import android.widget.AbsListView
 import android.widget.AdapterView.AdapterContextMenuInfo
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTabHost
-import org.apache.http.NameValuePair
-import org.apache.http.client.HttpClient
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.message.BasicNameValuePair
-import java.io.BufferedReader
-import java.io.InputStreamReader
+import androidx.lifecycle.lifecycleScope
+import com.abclab.abcereports.databinding.ReportFinalBinding
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.Parameters
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ReportFinalActivity : Fragment() {
+    private lateinit var binding: ReportFinalBinding
     private val listData = ArrayList<ResultData?>()
     private var lastIdx = 0
     private var rowAdded = 0
-    private var lv: ListView? = null
     private var aa: ReportArrayAdapter? = null
-    private var gc: GlobalClass? = null
-
+    private val gc: GlobalClass by lazy {
+        requireContext().applicationContext as GlobalClass
+    }
 
     override fun onCreateContextMenu(
         menu: ContextMenu, v: View,
@@ -49,16 +50,16 @@ class ReportFinalActivity : Fragment() {
             val d = listData[info.position]
             when (item.itemId) {
                 R.id.findRptResultFindRelated -> {
-                    gc!!.findReportFilters.PatientName = d!!.patientName
+                    gc.findReportFilters.PatientName = d!!.patientName
 
                     val tabHost = view!!.parent.parent.parent as FragmentTabHost
-                    gc!!.forceFindResult = true
+                    gc.forceFindResult = true
                     tabHost.currentTab = 2
                     return true
                 }
 
                 R.id.findRptResultDownload -> {
-                    gc!!.reportNo = d!!.reportNo
+                    gc.reportNo = d!!.reportNo
                     DownloadFile(activity!!)
                     return true
                 }
@@ -73,22 +74,21 @@ class ReportFinalActivity : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val v = inflater.inflate(R.layout.report_final, container, false)
-        lv = v.findViewById<View>(R.id.reportFinalLV) as ListView
-        gc = (v.context.applicationContext as GlobalClass)
-        registerForContextMenu(lv)
-        lv!!.setOnScrollListener(object : AbsListView.OnScrollListener {
+    ): View {
+        if (!::binding.isInitialized)
+            binding = ReportFinalBinding.inflate(inflater, container, false)
+        registerForContextMenu(binding.reportFinalLV)
+        binding.reportFinalLV.setOnScrollListener(object : AbsListView.OnScrollListener {
             override fun onScrollStateChanged(
                 view: AbsListView,
                 scrollState: Int
             ) {
                 val threshold = 1
-                val count = lv!!.count
+                val count = binding.reportFinalLV.count
 
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    if (lv!!.lastVisiblePosition >= count - threshold) {
-                        AsyncCallWS().execute()
+                    if (binding.reportFinalLV.lastVisiblePosition >= count - threshold) {
+                        populateData()
                     }
                 }
             }
@@ -99,103 +99,81 @@ class ReportFinalActivity : Fragment() {
             ) {
             }
         })
-        lv!!.onItemClickListener =
+        binding.reportFinalLV.onItemClickListener =
             OnItemClickListener { parent, view, position, id ->
                 if (position < listData.size - 1) {
                     val d = listData[position]
-                    gc!!.reportNo = d!!.reportNo
+                    gc.reportNo = d!!.reportNo
                     DownloadFile(activity!!)
                 }
             }
-        return v
+        return binding.root
     }
 
     fun populateData() {
-        try {
-            val httpClient: HttpClient = DefaultHttpClient()
-            val httpPost = HttpPost("https://www.abclab.com/eReportApple/Report/FindFinals")
-
-            val params: MutableList<NameValuePair> = ArrayList(2)
-            params.add(BasicNameValuePair("branch", gc!!.getBranchId().toString()))
-            Log.d("branchId", gc!!.getBranchId().toString() + " ")
-            params.add(BasicNameValuePair("siteid", gc!!.siteId))
-            params.add(BasicNameValuePair("username", gc!!.userId))
-            params.add(BasicNameValuePair("hash", gc!!.hashCode))
-            params.add(BasicNameValuePair("startrow", lastIdx.toString()))
-            httpPost.entity = UrlEncodedFormEntity(params)
-
-            val response = httpClient.execute(httpPost)
-            val entity = response.entity
-            val webs = entity.content
-            var result = ""
+        viewLifecycleOwner.lifecycleScope.launch {
+            gc.showProgress(activity, "Loading Data", "Please Wait")
             try {
-                val reader = BufferedReader(InputStreamReader(webs, "iso-8859-1"), 8)
-                val sb = StringBuilder()
-                var line: String? = null
-                while ((reader.readLine().also { line = it }) != null) {
-                    sb.append(line + "\n")
+                try {
+                    val result = withContext(Dispatchers.IO){
+                        HttpClient(Android).submitForm(
+                            url = "https://www.abclab.com/eReportApple/Report/FindFinals",
+                            formParameters = Parameters.build {
+                                append("branch", gc.getBranchId().toString())
+                                append("siteid", gc.siteId!!)
+                                append("username", gc.userId!!)
+                                append("hash", gc.hashCode!!)
+                                append("startrow", lastIdx.toString())
+                            }
+                        ).bodyAsText()
+                    }
+                    if (result.isNotEmpty()) {
+                        gc.PopulateData(result, listData)
+                    }
+                    rowAdded = listData.size - lastIdx
+                    lastIdx += rowAdded
+                } catch (e: Exception) {
+                    Log.d(getString(R.string.tag), "ERROR $e")
                 }
-                webs.close()
-                result = sb.toString()
-                if (result.length > 0) {
-                    gc!!.PopulateData(result, listData)
-                }
-                rowAdded = listData.size - lastIdx
-                lastIdx += rowAdded
             } catch (e: Exception) {
                 Log.d(getString(R.string.tag), "ERROR $e")
             }
-        } catch (e: Exception) {
-            Log.d(getString(R.string.tag), "ERROR $e")
+            updateList()
+        }
+    }
+
+    private fun updateList() {
+        aa = ReportArrayAdapter(activity, listData)
+        binding.reportFinalLV.adapter = aa
+        gc.hideProgress()
+        if (listData.size > 0) {
+            if (rowAdded > 0) {
+                binding.reportFinalLV.post { binding.reportFinalLV.setSelection(lastIdx - rowAdded - 1) }
+                Toast.makeText(
+                    activity,
+                    getString(R.string.menuLongPressOption),
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(
+                    activity,
+                    getString(R.string.noAddRecordFound),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        } else {
+            Toast.makeText(activity, getString(R.string.noRecordFound), Toast.LENGTH_LONG)
+                .show()
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (lastIdx == 0) {
-            AsyncCallWS().execute()
-        } else if (!listData.isEmpty()) {
-            aa = ReportArrayAdapter(activity, listData)
-            lv!!.adapter = aa
-        }
-    }
-
-    private inner class AsyncCallWS : AsyncTask<String?, Void?, Void?>() {
-        override fun doInBackground(vararg p0: String?): Void? {
             populateData()
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
+        } else if (listData.isNotEmpty()) {
             aa = ReportArrayAdapter(activity, listData)
-            lv!!.adapter = aa
-            gc!!.hideProgress()
-            if (listData.size > 0) {
-                if (rowAdded > 0) {
-                    lv!!.post { lv!!.setSelection(lastIdx - rowAdded - 1) }
-                    Toast.makeText(
-                        activity,
-                        getString(R.string.menuLongPressOption),
-                        Toast.LENGTH_LONG
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        activity,
-                        getString(R.string.noAddRecordFound),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            } else {
-                Toast.makeText(activity, getString(R.string.noRecordFound), Toast.LENGTH_LONG)
-                    .show()
-            }
-        }
-
-        override fun onPreExecute() {
-            gc!!.showProgress(activity, "Loading Data", "Please Wait")
-        }
-
-        override fun onProgressUpdate(vararg values: Void?) {
+            binding.reportFinalLV.adapter = aa
         }
     }
 }
