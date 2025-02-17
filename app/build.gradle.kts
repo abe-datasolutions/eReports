@@ -29,11 +29,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.0.0")
+    implementation(libs.androidx.appcompat)
 //    implementation("com.android.support:support-v4:28.0.0")
 //    implementation("com.android.support:appcompat-v7:28.0.0")
     implementation(files("libs/ksoap2-android-assembly-2.4-jar-with-dependencies.jar"))
-    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1")
+    implementation(libs.sqliteassethelper)
 //    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
 //    implementation("androidx.core:core-ktx:1.15.0")

@@ -1,0 +1,16 @@
+[versions]
+appcompat = "1.0.0"
+androidGradle = "8.8.1"
+kotlin = "1.9.24"
+sqliteassethelper = "2.0.1"
+
+[libraries]
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+android-tools-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+sqliteassethelper = { module = "com.readystatesoftware.sqliteasset:sqliteassethelper", version.ref = "sqliteassethelper" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "androidGradle" }
+
+[bundles]
