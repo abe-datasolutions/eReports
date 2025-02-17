@@ -7,9 +7,11 @@ buildscript {
     dependencies {
         classpath(libs.android.tools.build.gradle)
         classpath(libs.kotlin.gradle.plugin)
+        classpath(libs.kotlin.serialization)
     }
 }
 
 plugins {
     alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.android) apply false
 }

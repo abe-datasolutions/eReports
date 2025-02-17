@@ -3,14 +3,24 @@ appcompat = "1.0.0"
 androidGradle = "8.8.1"
 kotlin = "1.9.24"
 sqliteassethelper = "2.0.1"
+lifecycle = "2.8.7"
+ktor = "2.3.11"
+kotlinx-serialization-json = "1.6.3"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 android-tools-build-gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 sqliteassethelper = { module = "com.readystatesoftware.sqliteasset:sqliteassethelper", version.ref = "sqliteassethelper" }
+androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "lifecycle" }
+kotlin-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-plugin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
 [bundles]
