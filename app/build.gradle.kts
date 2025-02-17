@@ -11,6 +11,18 @@ android {
         minSdk = 21
         //noinspection EditedTargetSdkVersion,ExpiredTargetSdkVersion
         targetSdk = 28
+
+        buildConfigField(
+            type = "int",
+            name = "BRANCH_ID",
+            value = "2" // PH = 1, ID = 2, US = 0
+        )
+
+        buildConfigField(
+            type = "String",
+            name = "PREF_COUNTRY",
+            value = "\"ID\"" // PH, ID, US
+        )
     }
 
     buildTypes {
@@ -25,6 +37,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    buildFeatures {
+        buildConfig = true
     }
 }
 

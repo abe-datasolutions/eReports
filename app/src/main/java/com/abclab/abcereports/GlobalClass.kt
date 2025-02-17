@@ -42,8 +42,6 @@ class GlobalClass : Application() {
 	var permissions: Array<String> = arrayOf(
         Manifest.permission.WRITE_EXTERNAL_STORAGE, //TODO: Remove?
         Manifest.permission.REORDER_TASKS,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
     @JvmField
@@ -51,32 +49,7 @@ class GlobalClass : Application() {
         Environment.DIRECTORY_DOCUMENTS
     ).toString() + "/ABC/eReport"
 
-    fun getSharedString(pref: String?): String {
-        val settings = getSharedPreferences(PREFS_NAME, 0)
-        return settings.getString(pref, "").trim { it <= ' ' }
-    }
-
-    fun setSharedString(pref: String?, value: String?) {
-        val settings = getSharedPreferences(PREFS_NAME, 0)
-        val editor = settings.edit()
-        editor.putString(pref, value)
-        editor.commit()
-    }
-
-    fun getBranchId(): Int {
-        val rVal: Int
-        val c = getSharedString(PREF_COUNTRY)
-        rVal = if (c.equals("PH", ignoreCase = true)) {
-            1
-        } else if (c.equals("ID", ignoreCase = true)) {
-            2
-        } else if (c.equals("US", ignoreCase = true)) {
-            0
-        } else {
-            -1
-        }
-        return rVal
-    }
+    fun getBranchId(): Int = BuildConfig.BRANCH_ID
 
     fun setBranchId(value: Int) {
         branchIdentifier = value
@@ -141,75 +114,42 @@ class GlobalClass : Application() {
 
     val about: String
         get() {
-            val c = getSharedString(PREF_COUNTRY)
-            var d = ""
-
-            d = if (c.equals("PH", ignoreCase = true)) {
-                getString(R.string.aboutUsMLA)
-            } else if (c.equals("ID", ignoreCase = true)) {
-                getString(R.string.aboutUsJKT)
-            } else {
-                getString(R.string.aboutUsUS)
+            val res = when(BuildConfig.PREF_COUNTRY){
+                "PH" -> R.string.aboutUsMLA
+                "ID" -> R.string.aboutUsJKT
+                else -> R.string.aboutUsUS
             }
-            return d
+            return getString(res)
         }
     val contact: String
         get() {
-            val c = getSharedString(PREF_COUNTRY)
-            var d = ""
-
-            d = if (c.equals("PH", ignoreCase = true)) {
-                getString(R.string.contactUsMLA)
-            } else if (c.equals("ID", ignoreCase = true)) {
-                getString(R.string.contactUsJKT)
-            } else if (c.equals("US", ignoreCase = true)) {
-                getString(R.string.contactUsUS)
-            } else {
-                getString(R.string.contactUsDefault)
+            val res = when(BuildConfig.PREF_COUNTRY){
+                "PH" -> R.string.contactUsMLA
+                "ID" -> R.string.contactUsJKT
+                else -> R.string.contactUsUS
             }
-            return d
+            return getString(res)
         }
 
     val dateFormat: String
-        get() {
-            val c = getSharedString(PREF_COUNTRY)
-            var d = ""
-
-            d = if (c.equals("ID", ignoreCase = true)) {
-                "dd/MM/yyyy"
-            } else {
-                "MM/dd/yyyy"
-            }
-
-            return d
+        get() = when(BuildConfig.PREF_COUNTRY){
+            "ID" -> "dd/MM/yyyy"
+            else -> "MM/dd/yyyy"
         }
+
     val dateTimeFormat: String
-        get() {
-            val c = getSharedString(PREF_COUNTRY)
-            var d = ""
-
-            d = if (c.equals("ID", ignoreCase = true)) {
-                "dd/MM/yyyy kk:mm:ss"
-            } else {
-                "MM/dd/yyyy kk:mm:ss"
-            }
-            return d
+        get() = when(BuildConfig.PREF_COUNTRY){
+            "ID" -> "dd/MM/yyyy kk:mm:ss"
+            else -> "MM/dd/yyyy kk:mm:ss"
         }
+
     val locale: Locale
-        get() {
-            val c = getSharedString(PREF_COUNTRY)
-            var d = Locale.US
-
-            if (c.equals("ID", ignoreCase = true)) {
-                d = Locale.UK
-            }
-            return d
+        get() = when(BuildConfig.PREF_COUNTRY){
+            "ID" -> Locale.UK
+            else -> Locale.US
         }
-
 
     companion object {
-        private const val PREFS_NAME = "eLabsPref"
-        const val PREF_COUNTRY: String = "country"
         const val MULTIPLE_PERMISSIONS: Int = 10 // code you want.
     }
 }
