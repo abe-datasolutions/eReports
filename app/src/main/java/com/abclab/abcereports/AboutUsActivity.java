@@ -22,7 +22,7 @@ public class AboutUsActivity extends androidx.appcompat.app.AppCompatActivity {
 		getSupportActionBar().setTitle(getTitle());
         imgLogo = (ImageView) findViewById(R.id.aboutUsLogo);
         if (gc.getBranchId() == 2) {
-        	imgLogo.setImageResource(R.drawable.logo_jkt);
+        	imgLogo.setImageResource(R.drawable.logo_abc);
         }
 		
 		wv.loadData(gc.getAbout(), "text/html", "utf-8");

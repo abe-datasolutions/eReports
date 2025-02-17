@@ -49,9 +49,6 @@ class UserLoginActivity : AppCompatActivity() {
             Log.d(getString(R.string.tag), "Application Exit")
             finish()
         }
-        if (gc.getBranchId() == 2) {
-            binding.usrLogInLogo.setImageResource(R.drawable.logo_jkt)
-        }
         binding.usrLogInBtnLogIn.setOnClickListener {
             if (binding.usrLogInTxtUsername.text.isNotEmpty() && binding.usrLogInTxtPassword.text.isNotEmpty()) {
                 val task = AsyncCallWS()

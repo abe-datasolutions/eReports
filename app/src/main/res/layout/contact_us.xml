@@ -11,7 +11,7 @@
         android:layout_height="90dp"
         android:layout_centerHorizontal="true"
         android:contentDescription="@string/company"
-        android:src="@drawable/logo_default" />
+        android:src="@drawable/logo_abc" />
 
     <WebView
         android:id="@+id/contactUsView"

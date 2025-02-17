@@ -23,7 +23,7 @@ public class ContactUsActivity extends AppCompatActivity {
 		getSupportActionBar().setTitle(getTitle());
         imgLogo = (ImageView) findViewById(R.id.contactLogo);
         if (gc.getBranchId() == 2) {
-        	imgLogo.setImageResource(R.drawable.logo_jkt);
+        	imgLogo.setImageResource(R.drawable.logo_abc);
         }
 		
 		wv.loadData(gc.getContact(), "text/html", "utf-8");
