@@ -3,20 +3,12 @@ package com.abclab.abcereports
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.abclab.abcereports.MyLocation.LocationResult
-import java.io.IOException
 
 
 class MainActivity : Activity() {
-    //private LocationManager mLocationManager;
     private var gc: GlobalClass? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
