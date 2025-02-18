@@ -6,7 +6,6 @@ plugins {
 android {
     namespace = "com.abclab.abcereports"
     compileSdk = 34
-    useLibrary("org.apache.http.legacy")
     defaultConfig {
         applicationId = "com.abclab.abcereports"
         minSdk = 21
@@ -46,17 +45,12 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation)
-//    implementation("com.android.support:support-v4:28.0.0")
-//    implementation("com.android.support:appcompat-v7:28.0.0")
-    implementation(files("libs/ksoap2-android-assembly-2.4-jar-with-dependencies.jar"))
     implementation(libs.sqliteassethelper)
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-//    implementation("androidx.core:core-ktx:1.15.0")
 
 }
