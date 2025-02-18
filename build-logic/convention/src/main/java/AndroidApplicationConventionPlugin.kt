@@ -44,10 +44,8 @@ class AndroidApplicationConventionPlugin: Plugin<Project> {
                         }.forEach { output ->
                             output.outputFileName = buildString {
                                 append(ProjectDefaults.APK_VERSION_FILE_NAME)
-                                mergedFlavor.versionName?.let {
-                                    append('_')
-                                    append(it)
-                                }
+                                append('_')
+                                append(mergedFlavor.name)
                                 versionName?.let {
                                     append('_')
                                     append(it)
