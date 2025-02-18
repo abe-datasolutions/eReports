@@ -38,6 +38,10 @@ gradlePlugin {
             id = "ereports.android.test"
             implementationClass = "AndroidTestConventionPlugin"
         }
+        register("jvmLibrary"){
+            id = "ereports.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }
 
