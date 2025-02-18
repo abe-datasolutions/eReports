@@ -37,10 +37,10 @@ class ReportPendingActivity : Fragment() {
 
     override fun onCreateContextMenu(
         menu: ContextMenu, v: View,
-        menuInfo: ContextMenuInfo
+        menuInfo: ContextMenuInfo?
     ) {
         super.onCreateContextMenu(menu, v, menuInfo)
-        val inflater = activity!!.menuInflater
+        val inflater = requireActivity().menuInflater
         inflater.inflate(R.menu.find_report_result_menu, menu)
     }
 
@@ -52,7 +52,7 @@ class ReportPendingActivity : Fragment() {
                 R.id.findRptResultFindRelated -> {
                     gc.findReportFilters.PatientName = d!!.patientName
 
-                    val tabHost = view!!.parent.parent.parent as FragmentTabHost
+                    val tabHost = requireView().parent.parent.parent as FragmentTabHost
                     gc.forceFindResult = true
                     tabHost.currentTab = 2
                     return true
@@ -60,7 +60,7 @@ class ReportPendingActivity : Fragment() {
 
                 R.id.findRptResultDownload -> {
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(activity!!)
+                    DownloadFile(requireActivity())
                     return true
                 }
 
@@ -105,7 +105,7 @@ class ReportPendingActivity : Fragment() {
                 if (position < listData.size - 1) {
                     val d = listData[position]
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(activity!!)
+                    DownloadFile(requireActivity())
                 }
             }
         return binding.root
