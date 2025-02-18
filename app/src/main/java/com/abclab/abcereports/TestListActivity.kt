@@ -76,12 +76,14 @@ class TestListActivity : AppCompatActivity() {
             try {
                 try {
                     val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).submitForm(
-                            url = "https://www.abclab.com/eReportApple/Tests/GetVersion",
-                            formParameters = Parameters.build {
-                                append("branch", gc.getBranchId().toString())
-                            }
-                        ).bodyAsText().replace("\"", "")
+                        HttpClient(Android).use {
+                            it.submitForm(
+                                url = "https://www.abclab.com/eReportApple/Tests/GetVersion",
+                                formParameters = Parameters.build {
+                                    append("branch", gc.getBranchId().toString())
+                                }
+                            ).bodyAsText().replace("\"", "")
+                        }
                     }
                     runCatching {
                         dbOnlineVersion = result.toInt()
@@ -108,12 +110,14 @@ class TestListActivity : AppCompatActivity() {
         try {
             try {
                 val result = withContext(Dispatchers.IO){
-                    HttpClient(Android).submitForm(
-                        url = "https://www.abclab.com/eReportApple/Tests/GetList",
-                        formParameters = Parameters.build {
-                            append("branch", gc.getBranchId().toString())
-                        }
-                    ).bodyAsText()
+                    HttpClient(Android).use {
+                        it.submitForm(
+                            url = "https://www.abclab.com/eReportApple/Tests/GetList",
+                            formParameters = Parameters.build {
+                                append("branch", gc.getBranchId().toString())
+                            }
+                        ).bodyAsText()
+                    }
                 }
                 if (result.isNotEmpty()) {
                     db.clearList(gc.getBranchId())

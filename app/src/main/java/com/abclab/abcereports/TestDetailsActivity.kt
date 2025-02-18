@@ -104,13 +104,15 @@ class TestDetailsActivity : AppCompatActivity() {
             Log.d("TestDetails", "TestCode: ${gc.testCode}")
             try {
                 val result = withContext(Dispatchers.IO){
-                    HttpClient(Android).submitForm(
-                        url = "https://www.abclab.com/eReportApple/Tests/GetDetails",
-                        formParameters = Parameters.build {
-                            append("branch", gc.getBranchId().toString())
-                            append("testCode", gc.testCode!!)
-                        }
-                    ).bodyAsText()
+                    HttpClient(Android).use {
+                        it.submitForm(
+                            url = "https://www.abclab.com/eReportApple/Tests/GetDetails",
+                            formParameters = Parameters.build {
+                                append("branch", gc.getBranchId().toString())
+                                append("testCode", gc.testCode!!)
+                            }
+                        ).bodyAsText()
+                    }
                 }
                 if (result.isNotEmpty()) {
                     Log.d("result", result)

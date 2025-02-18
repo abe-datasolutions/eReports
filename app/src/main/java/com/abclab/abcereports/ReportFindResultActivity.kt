@@ -125,38 +125,40 @@ class ReportFindResultActivity : AppCompatActivity() {
             try {
                 try {
                     val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).submitForm(
-                            url = "https://www.abclab.com/eReportApple/Report/FindReport",
-                            formParameters = Parameters.build {
-                                append("branch", gc.getBranchId().toString())
-                                append("siteid", gc.siteId!!)
-                                append("username", gc.userId!!)
-                                append("hash", gc.hashCode!!)
-                                append("startrow", lastIdx.toString())
-                                val filter = gc.findReportFilters
-                                if (filter.ReportNo.isNotEmpty())
-                                    append("sampid", filter.ReportNo)
-                                if (filter.PatientName.isNotEmpty())
-                                    append("patname", filter.PatientName)
-                                if (filter.Gender.isNotEmpty())
-                                    append("patsex", filter.Gender)
-                                if ((filter.DateFrom + filter.DateTo) > 0) {
-                                    //SimpleDateFormat sf = (SimpleDateFormat) SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Locale.US);
-                                    if (filter.DateFrom > 0) {
-                                        append(
-                                            name = "rptdtfr",
-                                            value = DateFormat.format("MM/dd/yyyy", Date(filter.DateFrom)) as String
-                                        )
-                                    }
-                                    if (filter.DateTo > 0) {
-                                        append(
-                                            name = "rptdtto",
-                                            value = DateFormat.format("MM/dd/yyyy", Date(filter.DateTo)) as String
-                                        )
+                        HttpClient(Android).use {
+                            it.submitForm(
+                                url = "https://www.abclab.com/eReportApple/Report/FindReport",
+                                formParameters = Parameters.build {
+                                    append("branch", gc.getBranchId().toString())
+                                    append("siteid", gc.siteId!!)
+                                    append("username", gc.userId!!)
+                                    append("hash", gc.hashCode!!)
+                                    append("startrow", lastIdx.toString())
+                                    val filter = gc.findReportFilters
+                                    if (filter.ReportNo.isNotEmpty())
+                                        append("sampid", filter.ReportNo)
+                                    if (filter.PatientName.isNotEmpty())
+                                        append("patname", filter.PatientName)
+                                    if (filter.Gender.isNotEmpty())
+                                        append("patsex", filter.Gender)
+                                    if ((filter.DateFrom + filter.DateTo) > 0) {
+                                        //SimpleDateFormat sf = (SimpleDateFormat) SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Locale.US);
+                                        if (filter.DateFrom > 0) {
+                                            append(
+                                                name = "rptdtfr",
+                                                value = DateFormat.format("MM/dd/yyyy", Date(filter.DateFrom)) as String
+                                            )
+                                        }
+                                        if (filter.DateTo > 0) {
+                                            append(
+                                                name = "rptdtto",
+                                                value = DateFormat.format("MM/dd/yyyy", Date(filter.DateTo)) as String
+                                            )
+                                        }
                                     }
                                 }
-                            }
-                        ).bodyAsText()
+                            ).bodyAsText()
+                        }
                     }
                     if (result.isNotEmpty()) {
                         gc.PopulateData(result, listData)

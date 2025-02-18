@@ -115,15 +115,16 @@ class UserLoginActivity : AppCompatActivity() {
 
             withContext(Dispatchers.IO){
                 try {
-                    var result = ""
                     try {
-                        result = HttpClient(Android).submitForm(
-                            url = "https://www.abclab.com/eReportApple/Account/Validate",
-                            formParameters = Parameters.build {
-                                append("userId", username)
-                                append("password", password)
-                            }
-                        ).bodyAsText()
+                        val result = HttpClient(Android).use {
+                            it.submitForm(
+                                url = "https://www.abclab.com/eReportApple/Account/Validate",
+                                formParameters = Parameters.build {
+                                    append("userId", username)
+                                    append("password", password)
+                                }
+                            ).bodyAsText()
+                        }
 
                         if (result.isNotEmpty()) {
                             val jData = JSONObject(result)

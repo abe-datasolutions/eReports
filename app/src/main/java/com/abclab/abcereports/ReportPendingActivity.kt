@@ -117,16 +117,18 @@ class ReportPendingActivity : Fragment() {
             try {
                 try {
                     val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).submitForm(
-                            url = "https://www.abclab.com/eReportApple/Report/FindPartials",
-                            formParameters = Parameters.build {
-                                append("branch", gc.getBranchId().toString())
-                                append("siteid", gc.siteId!!)
-                                append("username", gc.userId!!)
-                                append("hash", gc.hashCode!!)
-                                append("startrow", lastIdx.toString())
-                            }
-                        ).bodyAsText()
+                        HttpClient(Android).use {
+                            it.submitForm(
+                                url = "https://www.abclab.com/eReportApple/Report/FindPartials",
+                                formParameters = Parameters.build {
+                                    append("branch", gc.getBranchId().toString())
+                                    append("siteid", gc.siteId!!)
+                                    append("username", gc.userId!!)
+                                    append("hash", gc.hashCode!!)
+                                    append("startrow", lastIdx.toString())
+                                }
+                            ).bodyAsText()
+                        }
                     }
                     if (result.isNotEmpty()) {
                         gc.PopulateData(result, listData)
