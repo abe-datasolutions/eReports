@@ -14,4 +14,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "eReports"
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
