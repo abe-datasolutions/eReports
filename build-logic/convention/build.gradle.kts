@@ -30,6 +30,10 @@ gradlePlugin {
             id = "ereports.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
         }
+        register("androidLibrary"){
+            id = "ereports.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
     }
 }
 
