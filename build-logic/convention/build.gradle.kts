@@ -42,6 +42,10 @@ gradlePlugin {
             id = "ereports.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("androidFlavor"){
+            id = "ereports.android.flavor"
+            implementationClass = "AndroidFlavorConventionPlugin"
+        }
     }
 }
 
