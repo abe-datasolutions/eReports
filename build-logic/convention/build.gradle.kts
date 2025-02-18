@@ -20,7 +20,7 @@ dependencies {
     compileOnly(libs.android.tools.build.gradle)
     compileOnly(libs.android.tools.common)
     compileOnly(libs.kotlin.gradle.plugin)
-    compileOnly(libs.compose.compiler.gradle.plugin)
+//    compileOnly(libs.compose.compiler.gradle.plugin) //FIXME: Upgrade Kotlin Version to 2.1.20
     compileOnly(libs.ksp.gradle.plugin)
 }
 
