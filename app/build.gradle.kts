@@ -1,16 +1,12 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ereports.android.application)
+    alias(libs.plugins.ereports.android.build.type)
     id(libs.plugins.kotlin.plugin.serialization.get().pluginId)
 }
 android {
     namespace = "com.abclab.abcereports"
-    compileSdk = 34
     defaultConfig {
         applicationId = "com.abclab.abcereports"
-        minSdk = 21
-        targetSdk = 34
-
         buildConfigField(
             type = "int",
             name = "BRANCH_ID",
@@ -22,21 +18,6 @@ android {
             name = "PREF_COUNTRY",
             value = "\"ID\"" // PH, ID, US
         )
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
-//            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.txt")
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-    kotlinOptions {
-        jvmTarget = "17"
     }
     buildFeatures {
         buildConfig = true
