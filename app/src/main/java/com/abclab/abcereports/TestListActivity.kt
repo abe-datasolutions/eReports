@@ -33,7 +33,7 @@ class TestListActivity : AppCompatActivity() {
 
     //	private DBTestInfo db;
     private val db: DatabaseAccess by lazy { 
-        DatabaseAccess.getInstance(this)
+        DatabaseAccess.getInstance(applicationContext)
     }
     private var dbOnlineVersion = 0
     private var loadLocal = true

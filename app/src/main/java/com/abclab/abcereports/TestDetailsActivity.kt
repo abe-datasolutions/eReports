@@ -1,57 +1,55 @@
 package com.abclab.abcereports
 
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.webkit.WebView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.ExternalDB.DatabaseAccess
-import org.apache.http.NameValuePair
-import org.apache.http.client.HttpClient
-import org.apache.http.client.entity.UrlEncodedFormEntity
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.message.BasicNameValuePair
-import org.apache.http.params.BasicHttpParams
-import org.apache.http.params.HttpConnectionParams
-import org.apache.http.params.HttpParams
+import com.abclab.abcereports.databinding.TestDetailsBinding
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.request.forms.submitForm
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.Parameters
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
-//import com.abclab.abcereports.DBTestInfo.TestDetailsData;
 class TestDetailsActivity : AppCompatActivity() {
-    private var gc: GlobalClass? = null
-
-    //	private DBTestInfo db;
-    private var db: DatabaseAccess? = null
-    private var wv: WebView? = null
-
-    //	private TestDetailsData tstDet;
+    private val binding by lazy { 
+        TestDetailsBinding.inflate(layoutInflater)
+    }
+    private val gc: GlobalClass by lazy {
+        applicationContext as GlobalClass
+    }
+    private val db: DatabaseAccess by lazy { 
+        DatabaseAccess.getInstance(applicationContext)
+    }
     private var tstDet: DatabaseAccess.TestDetailsData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        gc = (this.applicationContext as GlobalClass)
-        setContentView(R.layout.test_details)
+        setContentView(binding.root)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
         supportActionBar!!.setLogo(R.drawable.elabslogo)
         supportActionBar!!.setDisplayUseLogoEnabled(true)
         supportActionBar!!.title = title
-        wv = findViewById<View>(R.id.tstDetailsView) as WebView
 
         //		db = new DBTestInfo(getApplicationContext());
-        db = DatabaseAccess.getInstance(this)
-
-        GetDetailsAC().execute()
+        Log.d("TestDetails", "Activity Created")
     }
 
-    private fun loadData() {
+    override fun onStart() {
+        super.onStart()
+        loadData()
+    }
+
+    private fun renderData() {
+        Log.d("Test Details", "Data Loaded: $tstDet")
         if (tstDet != null) {
-            var html = if (gc!!.getBranchId() == 2) {
+            var html = if (gc.getBranchId() == 2) {
                 getString(R.string.testDetailsBodyJKT)
             } else {
                 getString(R.string.testDetailsBody)
@@ -63,105 +61,70 @@ class TestDetailsActivity : AppCompatActivity() {
             html = html.replace("/*preparation*/", tstDet!!.Preparation)
             html = html.replace("/*running*/", tstDet!!.Running)
             html = html.replace("/*tat*/", tstDet!!.TAT)
-            wv!!.loadData(html, "text/html", "utf-8")
+            Log.d("Test Details", "HTML Setup: $html")
+            binding.tstDetailsView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
         } else {
             Toast.makeText(applicationContext, getString(R.string.testNotFound), Toast.LENGTH_LONG)
                 .show()
             finish()
         }
     }
-
-    private inner class GetDetailsAC : AsyncTask<String?, Void?, Void?>() {
-        override fun doInBackground(vararg p0: String?): Void? {
-            localData
+    
+    private fun loadData(){
+        lifecycleScope.launch {
+            gc.showProgress(this@TestDetailsActivity, "Loading Details", "Please Wait")
+            loadLocalData()
             if (tstDet == null) {
                 fetchOnlineData()
             }
-            return null
-        }
-
-        override fun onPostExecute(result: Void?) {
-            gc!!.hideProgress()
-            loadData()
-        }
-
-        override fun onPreExecute() {
-            gc!!.showProgress(this@TestDetailsActivity, "Loading Details", "Please Wait")
+            gc.hideProgress()
+            renderData()
         }
     }
 
-    private val localData: Unit
-        get() {
-            try {
-                tstDet = db!!.getDetails(gc!!.getBranchId(), gc!!.testCode)
-            } catch (e: Exception) {
-                Log.d(
-                    getString(R.string.tag),
-                    "ERROR $e"
-                )
+    private suspend fun loadLocalData() {
+        Log.d("TestDetails", "Loading Local Data")
+        Log.d("TestDetails", "TestCode: ${gc.testCode}")
+        try {
+            tstDet = withContext(Dispatchers.IO){
+                db.getDetails(gc.getBranchId(), gc.testCode)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.d(
+                getString(R.string.tag),
+                "ERROR $e"
+            )
         }
-    private fun fetchOnlineData() {
+    }
+
+    private suspend fun fetchOnlineData() {
+        try {
+            Log.d("TestDetails", "Fetching Data")
+            Log.d("TestDetails", "TestCode: ${gc.testCode}")
             try {
-                val httpParam: HttpParams =
-                    BasicHttpParams()
-                HttpConnectionParams.setConnectionTimeout(httpParam, 30000)
-                HttpConnectionParams.setSoTimeout(httpParam, 30000)
-                val httpClient: HttpClient =
-                    DefaultHttpClient(httpParam)
-                val httpPost =
-                    HttpPost("https://www.abclab.com/eReportApple/Tests/GetDetails")
-
-                val params: MutableList<NameValuePair> =
-                    ArrayList(2)
-
-                params.add(
-                    BasicNameValuePair(
-                        "branch",
-                        gc!!.getBranchId().toString()
-                    )
-                )
-                params.add(BasicNameValuePair("testCode", gc!!.testCode))
-
-                Log.d(
-                    "branc -- testcode",
-                    gc!!.getBranchId().toString() + " - " + gc!!.testCode
-                )
-                httpPost.entity = UrlEncodedFormEntity(params)
-
-                val response = httpClient.execute(httpPost)
-                val entity = response.entity
-                val webs = entity.content
-                var result = ""
-                try {
-                    val reader =
-                        BufferedReader(InputStreamReader(webs, "iso-8859-1"), 8)
-                    val sb = StringBuilder()
-                    var line: String? = null
-                    while ((reader.readLine().also { line = it }) != null) {
-                        sb.append(line + "\n")
-                    }
-                    webs.close()
-                    result = sb.toString()
-                    if (result.length > 0) {
-                        Log.d("result", result.toString())
-                        val jData = JSONObject(result)
-                        //						tstDet = new TestDetailsData();
-                        tstDet = DatabaseAccess.TestDetailsData()
-                        tstDet!!.Code = jData.getString("Code")
-                        tstDet!!.Name = jData.getString("Name")
-                        tstDet!!.Description = jData.getString("Description")
-                        tstDet!!.Specimen = jData.getString("Specimen")
-                        tstDet!!.Preparation = jData.getString("Preparation")
-                        tstDet!!.Running = jData.getString("Running")
-                        tstDet!!.TAT = jData.getString("TAT")
-                        db!!.setDetails(gc!!.getBranchId(), tstDet)
-                    }
-                } catch (e: Exception) {
-                    Log.d(
-                        getString(R.string.tag),
-                        "ERROR $e"
-                    )
+                val result = withContext(Dispatchers.IO){
+                    HttpClient(Android).submitForm(
+                        url = "https://www.abclab.com/eReportApple/Tests/GetDetails",
+                        formParameters = Parameters.build {
+                            append("branch", gc.getBranchId().toString())
+                            append("testCode", gc.testCode!!)
+                        }
+                    ).bodyAsText()
+                }
+                if (result.isNotEmpty()) {
+                    Log.d("result", result)
+                    val jData = JSONObject(result)
+                    //						tstDet = new TestDetailsData();
+                    tstDet = DatabaseAccess.TestDetailsData()
+                    tstDet!!.Code = jData.getString("Code")
+                    tstDet!!.Name = jData.getString("Name")
+                    tstDet!!.Description = jData.getString("Description")
+                    tstDet!!.Specimen = jData.getString("Specimen")
+                    tstDet!!.Preparation = jData.getString("Preparation")
+                    tstDet!!.Running = jData.getString("Running")
+                    tstDet!!.TAT = jData.getString("TAT")
+                    db.setDetails(gc.getBranchId(), tstDet)
                 }
             } catch (e: Exception) {
                 Log.d(
@@ -169,5 +132,11 @@ class TestDetailsActivity : AppCompatActivity() {
                     "ERROR $e"
                 )
             }
+        } catch (e: Exception) {
+            Log.d(
+                getString(R.string.tag),
+                "ERROR $e"
+            )
         }
+    }
 }
