@@ -26,10 +26,10 @@ dependencies {
 
 gradlePlugin {
     plugins {
-//        register("androidApplication"){
-//            id = "ecourier.android.application"
-//            implementationClass = "AndroidApplicationConventionPlugin"
-//        }
+        register("androidApplication"){
+            id = "ereports.android.application"
+            implementationClass = "AndroidApplicationConventionPlugin"
+        }
     }
 }
 
