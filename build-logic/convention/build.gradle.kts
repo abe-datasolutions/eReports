@@ -46,6 +46,14 @@ gradlePlugin {
             id = "ereports.android.flavor"
             implementationClass = "AndroidFlavorConventionPlugin"
         }
+        register("androidBuildType"){
+            id = "ereports.android.build.type"
+            implementationClass = "AndroidBuildTypeConventionPlugin"
+        }
+        register("androidCommonBuildType"){
+            id = "ereports.android.build.type.common"
+            implementationClass = "AndroidCommonBuildTypeConventionPlugin"
+        }
     }
 }
 

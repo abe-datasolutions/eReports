@@ -51,6 +51,8 @@ ereports-android-library = { id = "ereports.android.library", version = "unspeci
 ereports-android-test = { id = "ereports.android.test", version = "unspecified" }
 ereports-jvm-library = { id = "ereports.jvm.library", version = "unspecified" }
 ereports-android-flavor = { id = "ereports.android.flavor", version = "unspecified" }
+ereports-android-build-type = { id = "ereports.android.build.type", version = "unspecified" }
+ereports-android-build-type-common = { id = "ereports.android.build.type.common", version = "unspecified" }
 # Convention Plugins ##
 
 [bundles]
