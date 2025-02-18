@@ -49,6 +49,7 @@ androidx-room = { id = "androidx.room", version.ref = "room" }
 ereports-android-application = { id = "ereports.android.application", version = "unspecified" }
 ereports-android-library = { id = "ereports.android.library", version = "unspecified" }
 ereports-android-test = { id = "ereports.android.test", version = "unspecified" }
+ereports-jvm-library = { id = "ereports.jvm.library", version = "unspecified" }
 # Convention Plugins ##
 
 [bundles]
