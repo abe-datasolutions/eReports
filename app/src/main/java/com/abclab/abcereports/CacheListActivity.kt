@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ContentUris
 import android.content.DialogInterface
 import android.content.Intent
+import android.media.MediaScannerConnection
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
@@ -22,6 +23,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.net.toUri
 import java.io.File
 import java.util.Calendar
@@ -227,27 +229,26 @@ class CacheListActivity : AppCompatActivity() {
         try {
             try {
                 val folder = File(gc!!.rptStorage)
-                if (folder.exists()) {
-                    var files: Array<File>? = null
-                    files = folder.listFiles { dir: File?, filename: String ->
-                        Log.d("CacheList", "Files Check: $dir, $filename")
-                        filename.endsWith(".pdf")
-                    }
-                    Log.d("CacheList", "Files Found: ${files.size}")
-                    for (file in files) {
-                        val nData = CacheData()
-                        nData.fileName = file.name
-                        nData.fileDate = file.lastModified()
-                        val dm = Date(file.lastModified())
-                        val c = Calendar.getInstance()
-                        c.add(Calendar.HOUR, -24)
-                        if (dm.before(c.time)) {
-                            Log.d("CacheList", "File Deleted: $nData")
-                            file.delete()
-                        } else {
-                            Log.d("CacheList", "File Added: $nData")
-                            listData.add(nData)
-                        }
+                if (!folder.exists()) return
+
+                val files = folder.listFiles { dir: File?, filename: String ->
+                    Log.d("CacheList", "Files Check: $dir, $filename")
+                    filename.endsWith(".pdf")
+                } ?: emptyArray()
+                Log.d("CacheList", "Files Found: ${files.size}")
+                for (file in files) {
+                    val nData = CacheData()
+                    nData.fileName = file.name
+                    nData.fileDate = file.lastModified()
+                    val dm = Date(file.lastModified())
+                    val c = Calendar.getInstance()
+                    c.add(Calendar.HOUR, -24)
+                    if (dm.before(c.time)) {
+                        Log.d("CacheList", "File Deleted: $nData")
+                        file.delete()
+                    } else {
+                        Log.d("CacheList", "File Added: $nData")
+                        listData.add(nData)
                     }
                 }
             } catch (e: Exception) {

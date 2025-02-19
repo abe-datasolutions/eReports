@@ -15,6 +15,7 @@ androidxJunit = "1.2.1"
 espresso-core = "3.6.1"
 junit = "4.13.2"
 material = "1.12.0"
+rules = "1.6.1"
 
 [libraries]
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidXCore" }
@@ -37,6 +38,7 @@ compose-compiler-gradle-plugin = { module = "org.jetbrains.kotlin:compose-compil
 ksp-gradle-plugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-rules = { group = "androidx.test", name = "rules", version.ref = "rules" }
 # Gradle ##
 
 [plugins]

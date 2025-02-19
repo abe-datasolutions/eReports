@@ -18,6 +18,7 @@ android {
             name = "PREF_COUNTRY",
             value = "\"ID\"" // PH, ID, US
         )
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
         buildConfig = true
@@ -34,4 +35,8 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.sqliteassethelper)
     implementation(projects.shared)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.rules)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 }

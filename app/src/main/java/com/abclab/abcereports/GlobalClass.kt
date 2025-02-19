@@ -46,10 +46,9 @@ class GlobalClass : Application() {
         add(Manifest.permission.REORDER_TASKS)
     }.toTypedArray()
 
-    @JvmField
-	val rptStorage: String = Environment.getExternalStoragePublicDirectory(
+    val rptStorage: String get() = getExternalFilesDir(
         Environment.DIRECTORY_DOCUMENTS
-    ).toString() + "/ABC/eReport"
+    ).toString() + "/Reports"
 
     fun getBranchId(): Int = BuildConfig.BRANCH_ID
 
