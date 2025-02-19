@@ -1,11 +1,13 @@
 package com.abclab.abcereports
 
 import android.app.AlertDialog
+import android.content.ContentUris
 import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.AsyncTask
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.ActionMode
 import android.view.ContextMenu
@@ -19,6 +21,8 @@ import android.widget.AdapterView.OnItemClickListener
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import java.io.File
 import java.util.Calendar
 import java.util.Date
@@ -162,13 +166,19 @@ class CacheListActivity : AppCompatActivity() {
             OnItemClickListener { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
                 val d =
                     listData[position]
-                val fn = gc!!.rptStorage + "/" + d.fileName
-                val f = File(fn)
-                if (f.exists()) {
+                val pdfFile = File(File(gc!!.rptStorage), d.fileName)
+                Log.d("CacheList", "File Clicked: $pdfFile")
+                if (pdfFile.exists()) {
                     try {
-                        val targetUri = Uri.fromFile(f)
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.setDataAndType(targetUri, "application/pdf")
+                        val targetUri = FileProvider.getUriForFile(
+                            this,
+                            "${applicationContext.packageName}.fileprovider",
+                            pdfFile
+                        )
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            setDataAndType(targetUri, "application/pdf")
+                        }
 
                         startActivity(intent)
                         Toast.makeText(
@@ -177,11 +187,20 @@ class CacheListActivity : AppCompatActivity() {
                             Toast.LENGTH_LONG
                         ).show()
                     } catch (e: Exception) {
-                        gc!!.alert(
-                            applicationContext,
-                            "Error viewing report",
-                            "Please install PDF viewer to view the report."
-                        )
+                        e.printStackTrace()
+                        runCatching {
+                            gc!!.alert(
+                                applicationContext,
+                                "Error viewing report",
+                                "Please install PDF viewer to view the report."
+                            )
+                        }.onFailure {
+                            Toast.makeText(
+                                applicationContext,
+                                "Error viewing report!. Please install PDF viewer to view the report.",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
                     }
                 }
             }
@@ -211,12 +230,10 @@ class CacheListActivity : AppCompatActivity() {
                 if (folder.exists()) {
                     var files: Array<File>? = null
                     files = folder.listFiles { dir: File?, filename: String ->
-                        if (filename.endsWith(".pdf")) {
-                            return@listFiles true
-                        } else {
-                            return@listFiles false
-                        }
+                        Log.d("CacheList", "Files Check: $dir, $filename")
+                        filename.endsWith(".pdf")
                     }
+                    Log.d("CacheList", "Files Found: ${files.size}")
                     for (file in files) {
                         val nData = CacheData()
                         nData.fileName = file.name
@@ -225,17 +242,19 @@ class CacheListActivity : AppCompatActivity() {
                         val c = Calendar.getInstance()
                         c.add(Calendar.HOUR, -24)
                         if (dm.before(c.time)) {
+                            Log.d("CacheList", "File Deleted: $nData")
                             file.delete()
                         } else {
+                            Log.d("CacheList", "File Added: $nData")
                             listData.add(nData)
                         }
                     }
                 }
             } catch (e: Exception) {
-                Log.d(getString(R.string.tag), "ERROR $e")
+                e.printStackTrace()
             }
         } catch (e: Exception) {
-            Log.d(getString(R.string.tag), "ERROR $e")
+            e.printStackTrace()
         }
     }
 
