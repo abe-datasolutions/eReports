@@ -1,7 +1,7 @@
 package com.abedatasolutions.ereports.core.models.reports
 
 
-import com.abedatasolutions.ereports.core.serialization.SoapDateTimeToInstantSerializer
+import com.abedatasolutions.ereports.core.models.serialization.SoapDateTimeToInstantSerializer
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName

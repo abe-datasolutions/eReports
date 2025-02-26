@@ -1,4 +1,4 @@
-package com.abedatasolutions.ereports.core.serialization
+package com.abedatasolutions.ereports.core.models.serialization
 
 import com.abedatasolutions.ereports.core.common.logging.Logger
 import kotlinx.datetime.Instant

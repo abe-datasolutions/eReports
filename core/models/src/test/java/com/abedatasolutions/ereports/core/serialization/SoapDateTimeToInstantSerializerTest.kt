@@ -5,6 +5,7 @@ import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
+import com.abedatasolutions.ereports.core.models.serialization.SoapDateTimeToInstantSerializer
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import org.junit.Test
