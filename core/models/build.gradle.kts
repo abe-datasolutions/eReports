@@ -8,4 +8,5 @@ dependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.ktor.client.core)
     api(projects.core.common)
+    testImplementation(projects.core.commonTest)
 }

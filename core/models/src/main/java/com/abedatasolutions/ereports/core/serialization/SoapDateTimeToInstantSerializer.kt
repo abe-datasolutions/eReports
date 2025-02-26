@@ -11,7 +11,7 @@ import kotlinx.serialization.encoding.Encoder
 
 object SoapDateTimeToInstantSerializer: KSerializer<Instant> {
     private const val PREFIX = "/Date("
-    private const val SUFFIX = ")"
+    private const val SUFFIX = ")/"
 
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("SoapDateTime", PrimitiveKind.STRING)
 
