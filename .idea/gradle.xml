@@ -27,6 +27,8 @@
             <option value="$PROJECT_DIR$/build-logic/convention" />
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/core/common" />
+            <option value="$PROJECT_DIR$/core/data" />
+            <option value="$PROJECT_DIR$/core/data/network" />
             <option value="$PROJECT_DIR$/shared" />
           </set>
         </option>
