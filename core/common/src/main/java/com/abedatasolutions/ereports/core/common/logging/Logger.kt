@@ -42,12 +42,24 @@ interface Logger {
      */
     fun setCustomKey(key: String, value: String)
 
-    companion object {
-        var instance: Logger = JvmLogger
-            private set
+    companion object: Logger {
+        @Volatile
+        private var instance: Logger = JvmLogger
 
         fun setLogger(logger: Logger) = synchronized(this){
             instance = logger
+        }
+
+        override fun recordException(t: Throwable) {
+            instance.recordException(t)
+        }
+
+        override fun log(message: String) {
+            instance.log(message)
+        }
+
+        override fun setCustomKey(key: String, value: String) {
+            instance.setCustomKey(key, value)
         }
     }
 }
