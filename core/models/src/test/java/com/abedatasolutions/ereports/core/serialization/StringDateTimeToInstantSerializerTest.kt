@@ -1,16 +1,18 @@
 package com.abedatasolutions.ereports.core.serialization
 
 import assertk.assertThat
-import assertk.assertions.contains
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
+import assertk.assertions.isTrue
+import com.abedatasolutions.ereports.core.common.datetime.InstantPattern
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
-import com.abedatasolutions.ereports.core.models.serialization.SoapDateTimeToInstantSerializer
+import com.abedatasolutions.ereports.core.models.serialization.StringDateTimeToInstantSerializer
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import org.junit.Test
 
-class SoapDateTimeToInstantSerializerTest {
+class StringDateTimeToInstantSerializerTest {
     private val json = Json {
         encodeDefaults = true
         ignoreUnknownKeys = true
@@ -20,12 +22,27 @@ class SoapDateTimeToInstantSerializerTest {
     fun testSerializeAndDeserializeOnString(){
         val epochMillis = 1691596800000L
         val stringSoapDateTime = "\"/Date($epochMillis)/\""
-        val instant = json.decodeFromString(SoapDateTimeToInstantSerializer, stringSoapDateTime)
+
+//        assertThat(
+//            InstantPattern.entries.find {
+//                it.pattern.toRegex().matches(stringSoapDateTime)
+//            }
+//        ).isEqualTo(InstantPattern.Soap)
+        val instant = json.decodeFromString(StringDateTimeToInstantSerializer, stringSoapDateTime)
 
         assertThat(instant.toEpochMilliseconds()).isEqualTo(epochMillis)
+
+        val encodedInstant = json.encodeToString(StringDateTimeToInstantSerializer, instant)
+
+//        assertThat(
+//            InstantPattern.entries.find {
+//                it.pattern.toRegex().matches(encodedInstant)
+//            }
+//        ).isEqualTo(InstantPattern.ISO)
+        assertThat(encodedInstant).isNotEqualTo(stringSoapDateTime)
         assertThat(
-            json.encodeToString(SoapDateTimeToInstantSerializer, instant)
-        ).isEqualTo(stringSoapDateTime)
+            json.decodeFromString(StringDateTimeToInstantSerializer, encodedInstant)
+        ).isEqualTo(instant)
     }
 
     @Test

@@ -1,9 +1,8 @@
 package com.abedatasolutions.ereports.core.models.reports
 
 
-import com.abedatasolutions.ereports.core.models.serialization.SoapDateTimeToInstantSerializer
+import com.abedatasolutions.ereports.core.models.serialization.StringDateTimeToInstantSerializer
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,7 +15,7 @@ data class Report(
     @SerialName("PatSex")
     val gender: String = "",
     @SerialName("RptDt")
-    @Serializable(SoapDateTimeToInstantSerializer::class)
+    @Serializable(StringDateTimeToInstantSerializer::class)
     val reportDate: Instant,
     @SerialName("Status")
     val status: ReportStatus = ReportStatus.FINAL
