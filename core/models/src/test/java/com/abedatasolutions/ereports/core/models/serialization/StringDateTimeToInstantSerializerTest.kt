@@ -1,4 +1,4 @@
-package com.abedatasolutions.ereports.core.serialization
+package com.abedatasolutions.ereports.core.models.serialization
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -8,9 +8,11 @@ import com.abedatasolutions.ereports.core.common.datetime.InstantPattern
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
 import com.abedatasolutions.ereports.core.models.serialization.StringDateTimeToInstantSerializer
+import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.json.Json
 import org.junit.Test
+import kotlin.time.Duration.Companion.days
 
 class StringDateTimeToInstantSerializerTest {
     private val json = Json {

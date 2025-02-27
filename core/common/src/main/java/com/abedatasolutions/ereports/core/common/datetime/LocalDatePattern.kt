@@ -1,8 +1,11 @@
 package com.abedatasolutions.ereports.core.common.datetime
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.datetime.format.char
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * Enum class representing different date patterns and their corresponding formatters.
@@ -66,5 +69,8 @@ enum class LocalDatePattern(val pattern: String) {
          **/
         fun parse(dateString: String): LocalDate = find(dateString)?.formatter?.parse(dateString)
             ?: throw IllegalArgumentException("Cannot find pattern for: $dateString")
+
+        val LocalDate.Companion.distantDate: LocalDate
+            get() = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
     }
 }
