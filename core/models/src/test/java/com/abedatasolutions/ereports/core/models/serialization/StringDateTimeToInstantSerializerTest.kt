@@ -3,16 +3,14 @@ package com.abedatasolutions.ereports.core.models.serialization
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
-import assertk.assertions.isTrue
-import com.abedatasolutions.ereports.core.common.datetime.InstantPattern
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
-import com.abedatasolutions.ereports.core.models.serialization.StringDateTimeToInstantSerializer
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
 import kotlinx.serialization.json.Json
 import org.junit.Test
-import kotlin.time.Duration.Companion.days
 
 class StringDateTimeToInstantSerializerTest {
     private val json = Json {
@@ -21,7 +19,7 @@ class StringDateTimeToInstantSerializerTest {
     }
 
     @Test
-    fun testSerializeAndDeserializeOnString(){
+    fun testSerializeAndDeserializeOnSoapInstantString(){
         val epochMillis = 1691596800000L
         val stringSoapDateTime = "\"/Date($epochMillis)/\""
 
@@ -45,6 +43,30 @@ class StringDateTimeToInstantSerializerTest {
         assertThat(
             json.decodeFromString(StringDateTimeToInstantSerializer, encodedInstant)
         ).isEqualTo(instant)
+    }
+
+    @Test
+    fun testSerializeAndDeserializeOnSoapDateTimeString(){
+        val dateString = """"10/08/2023 07:25""""
+
+        val instant = json.decodeFromString(StringDateTimeToInstantSerializer, dateString)
+        val expectedInstant = LocalDateTime(
+            year = 2023,
+            monthNumber = 10,
+            dayOfMonth = 8,
+            hour = 7,
+            minute = 25
+        ).toInstant(TimeZone.currentSystemDefault())
+
+        assertThat(instant).isEqualTo(expectedInstant)
+
+        val serializedInstant = json.encodeToString(StringDateTimeToInstantSerializer, instant)
+
+        assertThat(serializedInstant).isNotEqualTo(dateString)
+
+        val deserializedInstant = json.decodeFromString(StringDateTimeToInstantSerializer, serializedInstant)
+
+        assertThat(deserializedInstant).isEqualTo(instant)
     }
 
     @Test
