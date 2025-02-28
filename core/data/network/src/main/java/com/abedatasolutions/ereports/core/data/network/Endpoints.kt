@@ -13,9 +13,9 @@ object Endpoints {
     const val FIND_REPORTS_FILTERED = "$RESULTS/FindReportsFiltered"
     const val CREATE_PDF = "/createpdf.aspx"
 
-    private const val TESTS_BASE_URL = "https://www.abclab.com"
+    const val TESTS_BASE_URL = "https://www.abclab.com"
     private const val TESTS = "$TESTS_BASE_URL/eReportApple/Tests"
-    private const val GET_TESTS_VERSION = "$TESTS/GetVersion"
-    private const val GET_TEST = "$TESTS/GetList"
-    private const val GET_TEST_DETAILS = "$TESTS/GetDetails"
+    const val GET_TESTS_VERSION = "$TESTS/GetVersion"
+    const val GET_TEST = "$TESTS/GetList"
+    const val GET_TEST_DETAILS = "$TESTS/GetDetails"
 }

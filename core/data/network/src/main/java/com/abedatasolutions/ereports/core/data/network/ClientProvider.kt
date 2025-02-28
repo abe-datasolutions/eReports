@@ -16,6 +16,7 @@ import io.ktor.serialization.kotlinx.json.json
 internal class ClientProvider(
     private val cookiesStorage: CookiesStorage = AcceptAllCookiesStorage(),
     private val baseUrl: BaseUrl = BaseUrl.current,
+    private val testBaseUrl: TestBaseUrl = TestBaseUrl.current,
     private val debugMode: DebugMode = DebugMode.current
 ) {
     fun provideClient(): HttpClient = HttpClient(Android){
@@ -33,6 +34,21 @@ internal class ClientProvider(
         )
         defaultRequest {
             url(baseUrl.value)
+            contentType(ContentType.Application.Json)
+        }
+    }
+
+    fun provideTestClient(): HttpClient = HttpClient(Android){
+        followRedirects = false
+        expectSuccess = true
+        developmentMode = debugMode.value
+
+        install(ContentNegotiation){
+            json(Serialization.json)
+        }
+
+        defaultRequest {
+            url(testBaseUrl.value)
             contentType(ContentType.Application.Json)
         }
     }
