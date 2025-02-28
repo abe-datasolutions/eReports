@@ -19,7 +19,7 @@ data class TestDetails(
     @SerialName("Specimen")
     val specimen: String = "",
     @SerialName("Preparation")
-    val preparation: String = "",
+    val preparation: String? = null,
     @SerialName("Running")
     val running: String = "",
     @SerialName("TAT")

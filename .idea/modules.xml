@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/eReports.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/eReports.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/data/network/eReports.core.data.network.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/data/network/eReports.core.data.network.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/models/eReports.core.models.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/models/eReports.core.models.test.iml" />
     </modules>
   </component>
