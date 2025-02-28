@@ -3,6 +3,9 @@ package com.abedatasolutions.ereports.core.models.serialization
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
+import com.abedatasolutions.ereports.core.common.datetime.InstantPattern
+import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
+import com.abedatasolutions.ereports.core.common.datetime.LocalDateTimePattern
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
 import kotlinx.datetime.Instant
@@ -22,12 +25,14 @@ class StringDateTimeToInstantSerializerTest {
     fun testSerializeAndDeserializeOnSoapInstantString(){
         val epochMillis = 1691596800000L
         val stringSoapDateTime = "\"/Date($epochMillis)/\""
+        val trimmedSoapDateTime = stringSoapDateTime.trim('"')
 
-//        assertThat(
-//            InstantPattern.entries.find {
-//                it.pattern.toRegex().matches(stringSoapDateTime)
-//            }
-//        ).isEqualTo(InstantPattern.Soap)
+        assertThat(
+            InstantPattern.entries.find {
+                it.pattern.toRegex().matches(trimmedSoapDateTime)
+            }
+        ).isEqualTo(InstantPattern.Soap)
+
         val instant = json.decodeFromString(StringDateTimeToInstantSerializer, stringSoapDateTime)
 
         assertThat(instant.toEpochMilliseconds()).isEqualTo(epochMillis)
@@ -48,6 +53,10 @@ class StringDateTimeToInstantSerializerTest {
     @Test
     fun testSerializeAndDeserializeOnSoapDateTimeString(){
         val dateString = """"10/08/2023 07:25""""
+
+        assertThat(
+            LocalDateTimePattern.find(dateString.trim('"'))
+        ).isEqualTo(LocalDateTimePattern.Soap)
 
         val instant = json.decodeFromString(StringDateTimeToInstantSerializer, dateString)
         val expectedInstant = LocalDateTime(
