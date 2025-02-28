@@ -8,5 +8,5 @@ import com.abedatasolutions.ereports.core.models.reports.ReportsQuery
 interface ReportsApi {
     suspend fun getReports(query: ReportsQuery): List<Report>
     suspend fun findReports(query: FindReportsQuery): List<Report>
-    suspend fun createPdf(accession: String): ByteArrayFile
+    suspend fun createPdf(accession: String): ByteArrayFile?
 }

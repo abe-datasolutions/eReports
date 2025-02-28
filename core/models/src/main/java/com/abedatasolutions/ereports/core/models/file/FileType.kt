@@ -16,4 +16,8 @@ enum class FileType(
         mimeType = "text/csv",
         extension = "csv"
     ),
+    PDF(
+        mimeType = "application/pdf",
+        extension = "pdf"
+    ),
 }
