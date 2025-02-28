@@ -1,6 +1,7 @@
 package com.abedatasolutions.ereports.core.data.network.auth
 
 import com.abedatasolutions.ereports.core.data.network.Endpoints
+import com.abedatasolutions.ereports.core.errors.network.AuthException
 import com.abedatasolutions.ereports.core.models.auth.LoginData
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -16,9 +17,9 @@ internal class AuthApiImpl(
         }.body<Int>()
 
         when(result){
-            0 -> error("Invalid Username/Password")
+            0 -> throw AuthException.InvalidCredentialsException
             1 -> return
-            2 -> error("Account has expired")
+            2 -> throw AuthException.AccountExpiredException
             else -> error("Unknown Response: $result")
         }
     }
