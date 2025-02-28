@@ -16,6 +16,6 @@ object Endpoints {
     const val TESTS_BASE_URL = "https://www.abclab.com"
     private const val TESTS = "$TESTS_BASE_URL/eReportApple/Tests"
     const val GET_TESTS_VERSION = "$TESTS/GetVersion"
-    const val GET_TEST = "$TESTS/GetList"
+    const val GET_TESTS = "$TESTS/GetList"
     const val GET_TEST_DETAILS = "$TESTS/GetDetails"
 }

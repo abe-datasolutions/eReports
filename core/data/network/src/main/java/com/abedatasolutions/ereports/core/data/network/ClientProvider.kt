@@ -49,7 +49,6 @@ internal class ClientProvider(
 
         defaultRequest {
             url(testBaseUrl.value)
-            contentType(ContentType.Application.Json)
         }
     }
 }

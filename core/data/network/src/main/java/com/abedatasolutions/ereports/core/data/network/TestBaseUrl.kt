@@ -15,7 +15,7 @@ package com.abedatasolutions.ereports.core.data.network
  * @throws IllegalStateException if attempting to access `current` before initialization.
  */
 @JvmInline
-value class TestBaseUrl(val value: String) {
+value class TestBaseUrl(val value: String = Endpoints.TESTS_BASE_URL) {
     init {
         setInstance(this)
     }
