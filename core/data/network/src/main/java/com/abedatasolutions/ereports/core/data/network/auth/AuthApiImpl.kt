@@ -1,5 +1,6 @@
 package com.abedatasolutions.ereports.core.data.network.auth
 
+import com.abedatasolutions.ereports.core.common.logging.Logger
 import com.abedatasolutions.ereports.core.data.network.Endpoints
 import com.abedatasolutions.ereports.core.errors.network.AuthException
 import com.abedatasolutions.ereports.core.models.auth.LoginData
@@ -16,6 +17,7 @@ internal class AuthApiImpl(
             setBody(data)
         }.body<Int>()
 
+        Logger.Debug.setCustomKey("LoginResponse", result.toString())
         when(result){
             0 -> throw AuthException.InvalidCredentialsException
             1 -> return
@@ -25,6 +27,8 @@ internal class AuthApiImpl(
     }
 
     override suspend fun isAuthenticated(): Boolean {
-        return client.post(Endpoints.IS_AUTHENTICATED).body()
+        return client.post(Endpoints.IS_AUTHENTICATED).body<Boolean>().also {
+            Logger.Debug.setCustomKey("IsAuthenticatedResponse", it.toString())
+        }
     }
 }
