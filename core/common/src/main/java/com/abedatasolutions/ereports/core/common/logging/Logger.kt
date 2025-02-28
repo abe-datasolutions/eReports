@@ -1,5 +1,7 @@
 package com.abedatasolutions.ereports.core.common.logging
 
+import com.abedatasolutions.ereports.core.common.DebugMode
+
 /**
  * The Logger interface provides a centralized way to record exceptions, log messages, and set custom keys
  * for debugging and monitoring purposes. It is designed to be used for both fatal and non-fatal error
@@ -60,6 +62,20 @@ interface Logger {
 
         override fun setCustomKey(key: String, value: String) {
             instance.setCustomKey(key, value)
+        }
+    }
+
+    object Debug: Logger{
+        override fun recordException(t: Throwable) {
+            if (DebugMode.isDebug) Companion.recordException(t)
+        }
+
+        override fun log(message: String) {
+            if (DebugMode.isDebug) Companion.log(message)
+        }
+
+        override fun setCustomKey(key: String, value: String) {
+            if (DebugMode.isDebug) Companion.setCustomKey(key, value)
         }
     }
 }
