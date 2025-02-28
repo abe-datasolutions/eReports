@@ -33,11 +33,13 @@ object JvmLogger: Logger {
                 }
             )
         }
+        println(message)
     }
 
     override fun setCustomKey(key: String, value: String) {
         synchronized(this) {
             pairs[key] = value
         }
+        println("$key: $value")
     }
 }
