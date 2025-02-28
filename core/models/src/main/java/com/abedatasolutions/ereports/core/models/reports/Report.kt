@@ -16,7 +16,7 @@ data class Report(
     val gender: String = "",
     @SerialName("RptDt")
     @Serializable(StringDateTimeToInstantSerializer::class)
-    val reportDate: Instant,
+    val reportDate: Instant?, //FIXME: Update Source to return null value
     @SerialName("Status")
     val status: ReportStatus = ReportStatus.FINAL
 )

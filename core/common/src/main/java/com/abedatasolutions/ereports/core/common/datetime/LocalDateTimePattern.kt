@@ -23,12 +23,18 @@ enum class LocalDateTimePattern(val pattern: String) {
     },
 
     /**
-     * Represents a custom date/time format (e.g., `10/27/2023 10:30`, `10/27/2023 10:30:00`, `10/27/2023 10:30:00.123`).
+     * Represents a custom date/time format (e.g., `27/10/2023 10:30`, `27/10/2023 10:30:00`, `27/10/2023 10:30:00.123`).
+     *
+     * This is a date/time string format taken from the database
      */
-    Soap("""^\d{2}/\d{2}/\d{4} \d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$""") {
+    Inetrep("""^\d{2}/\d{2}/\d{4} \d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?$""") {
         override val formatter: DateTimeFormat<LocalDateTime> by lazy {
             LocalDateTime.Format {
-                date(LocalDatePattern.Soap.formatter)
+                dayOfMonth()
+                char('/')
+                monthNumber()
+                char('/')
+                year()
                 char(' ')
                 time(LocalTime.Formats.ISO)
             }

@@ -25,13 +25,13 @@ data class Record(
     @SerialName("InRangeResult")
     val inRangeResult: String = "",
     @SerialName("OutsideReferenceRange")
-    val outsideReferenceRange: String = "",
+    val outsideReferenceRange: String? = null,
     @SerialName("ReferenceRange")
-    val referenceRange: String = "",
+    val referenceRange: String? = null,
     @SerialName("ReferenceDetails")
     val referenceDetails: List<String>? = null,
     @SerialName("Unit")
-    val unit: String = "",
+    val unit: String? = null,
     @SerialName("ResultDetails")
     val resultDetails: List<String>? = null,
     @SerialName("IsSubRecord")

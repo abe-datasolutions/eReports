@@ -4,7 +4,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
 import com.abedatasolutions.ereports.core.common.datetime.InstantPattern
-import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
 import com.abedatasolutions.ereports.core.common.datetime.LocalDateTimePattern
 import com.abedatasolutions.ereports.core.models.reports.Report
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
@@ -35,7 +34,7 @@ class StringDateTimeToInstantSerializerTest {
 
         val instant = json.decodeFromString(StringDateTimeToInstantSerializer, stringSoapDateTime)
 
-        assertThat(instant.toEpochMilliseconds()).isEqualTo(epochMillis)
+        assertThat(instant?.toEpochMilliseconds()).isEqualTo(epochMillis)
 
         val encodedInstant = json.encodeToString(StringDateTimeToInstantSerializer, instant)
 
@@ -56,13 +55,13 @@ class StringDateTimeToInstantSerializerTest {
 
         assertThat(
             LocalDateTimePattern.find(dateString.trim('"'))
-        ).isEqualTo(LocalDateTimePattern.Soap)
+        ).isEqualTo(LocalDateTimePattern.Inetrep)
 
         val instant = json.decodeFromString(StringDateTimeToInstantSerializer, dateString)
         val expectedInstant = LocalDateTime(
             year = 2023,
-            monthNumber = 10,
-            dayOfMonth = 8,
+            monthNumber = 8,
+            dayOfMonth = 10,
             hour = 7,
             minute = 25
         ).toInstant(TimeZone.currentSystemDefault())

@@ -29,7 +29,7 @@ data class PatientInfo(
     val phone: String = "",
     @SerialName("Dob")
     @Serializable(StringDateToLocalDateSerializer::class)
-    val dateOfBirth: LocalDate = LocalDate.distantDate,
+    val dateOfBirth: LocalDate? = null,
     @SerialName("Sex")
     val sex: String = "",
     @SerialName("PId")
@@ -42,13 +42,13 @@ data class PatientInfo(
     val demog: String = "",
     @SerialName("DtmCol")
     @Serializable(StringDateTimeToInstantSerializer::class)
-    val dateCollected: Instant = Clock.System.now(),
+    val dateCollected: Instant? = null,
     @SerialName("DtmRcv")
     @Serializable(StringDateTimeToInstantSerializer::class)
-    val dateReceived: Instant = Clock.System.now(),
+    val dateReceived: Instant? = null,
     @SerialName("DtmRpt")
     @Serializable(StringDateTimeToInstantSerializer::class)
-    val dateReported: Instant = Clock.System.now(),
+    val dateReported: Instant? = null,
     @SerialName("ReportMsg")
     val reportMsg: String = "",
     @SerialName("Status")

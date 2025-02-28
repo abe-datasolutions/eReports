@@ -7,6 +7,7 @@ import com.abedatasolutions.ereports.core.common.logging.Logger
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
@@ -14,11 +15,14 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-object StringDateTimeToInstantSerializer: KSerializer<Instant> {
+object StringDateTimeToInstantSerializer: KSerializer<Instant?> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("StringDateTime", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): Instant {
-        val dateString = decoder.decodeString()
+    override fun deserialize(decoder: Decoder): Instant? {
+        val dateString = decoder.runCatching {
+            decodeString()
+        }.getOrNull()
+        if (dateString.isNullOrEmpty()) return null
         return try {
             val pattern = DateTimePattern.find(dateString)
                 ?: throw IllegalArgumentException("Cannot find pattern for: $dateString")
@@ -32,11 +36,14 @@ object StringDateTimeToInstantSerializer: KSerializer<Instant> {
         }catch (e: Exception){
             Logger.log("Cannot Deserialize: $dateString")
             Logger.recordException(e)
-            Instant.DISTANT_PAST
+            null
         }
     }
 
-    override fun serialize(encoder: Encoder, value: Instant) {
-        encoder.encodeString(value.toString())
+    @OptIn(ExperimentalSerializationApi::class)
+    override fun serialize(encoder: Encoder, value: Instant?) {
+        value?.let {
+            encoder.encodeString(it.toString())
+        }?: encoder.encodeNull()
     }
 }
