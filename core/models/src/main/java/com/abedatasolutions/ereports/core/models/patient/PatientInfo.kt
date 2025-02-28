@@ -1,15 +1,11 @@
 package com.abedatasolutions.ereports.core.models.patient
 
 
-import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern.Companion.distantDate
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
 import com.abedatasolutions.ereports.core.models.serialization.StringDateTimeToInstantSerializer
 import com.abedatasolutions.ereports.core.models.serialization.StringDateToLocalDateSerializer
-import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.format.Padding
-import kotlinx.datetime.format.char
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
