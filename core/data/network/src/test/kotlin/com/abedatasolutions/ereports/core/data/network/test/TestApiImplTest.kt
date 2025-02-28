@@ -33,4 +33,13 @@ class TestApiImplTest{
         val version = api.getVersion()
         println("Version: $version")
     }
+
+    @Test
+    fun testFetchingList() = runTest {
+        val tests = api.getList()
+        println("Tests: ${tests.size}")
+        tests.forEach {
+            println(it)
+        }
+    }
 }
