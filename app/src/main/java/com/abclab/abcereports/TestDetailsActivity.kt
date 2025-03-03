@@ -7,15 +7,20 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.ExternalDB.DatabaseAccess
 import com.abclab.abcereports.databinding.TestDetailsBinding
+import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.data.network.test.TestApi
+import com.abedatasolutions.ereports.core.models.test.TestDetailsQuery
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import org.koin.android.ext.android.inject
 
 class TestDetailsActivity : AppCompatActivity() {
     private val binding by lazy { 
@@ -27,6 +32,7 @@ class TestDetailsActivity : AppCompatActivity() {
     private val db: DatabaseAccess by lazy { 
         DatabaseAccess.getInstance(applicationContext)
     }
+    private val api by inject<TestApi>()
     private var tstDet: DatabaseAccess.TestDetailsData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,7 +77,12 @@ class TestDetailsActivity : AppCompatActivity() {
     }
     
     private fun loadData(){
-        lifecycleScope.launch {
+        lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
             gc.showProgress(this@TestDetailsActivity, "Loading Details", "Please Wait")
             loadLocalData()
             if (tstDet == null) {
@@ -103,31 +114,24 @@ class TestDetailsActivity : AppCompatActivity() {
             Log.d("TestDetails", "Fetching Data")
             Log.d("TestDetails", "TestCode: ${gc.testCode}")
             try {
-                val result = withContext(Dispatchers.IO){
-                    HttpClient(Android).use {
-                        it.submitForm(
-                            url = "https://www.abclab.com/eReportApple/Tests/GetDetails",
-                            formParameters = Parameters.build {
-                                append("branch", gc.getBranchId().toString())
-                                append("testCode", gc.testCode!!)
-                            }
-                        ).bodyAsText()
-                    }
-                }
-                if (result.isNotEmpty()) {
-                    Log.d("result", result)
-                    val jData = JSONObject(result)
-                    //						tstDet = new TestDetailsData();
-                    tstDet = DatabaseAccess.TestDetailsData()
-                    tstDet!!.Code = jData.getString("Code")
-                    tstDet!!.Name = jData.getString("Name")
-                    tstDet!!.Description = jData.getString("Description")
-                    tstDet!!.Specimen = jData.getString("Specimen")
-                    tstDet!!.Preparation = jData.getString("Preparation")
-                    tstDet!!.Running = jData.getString("Running")
-                    tstDet!!.TAT = jData.getString("TAT")
-                    db.setDetails(gc.getBranchId(), tstDet)
-                }
+                val details = withContext(Dispatchers.IO){
+                    api.getDetails(
+                        TestDetailsQuery(
+                            BuildConfig.BRANCH_ID,
+                            gc.testCode!!
+                        )
+                    )
+                } ?: return
+
+                tstDet = DatabaseAccess.TestDetailsData()
+                tstDet!!.Code = details.code
+                tstDet!!.Name = details.name
+                tstDet!!.Description = details.description
+                tstDet!!.Specimen = details.specimen
+                tstDet!!.Preparation = details.preparation
+                tstDet!!.Running = details.running
+                tstDet!!.TAT = details.tAT
+                db.setDetails(gc.getBranchId(), tstDet)
             } catch (e: Exception) {
                 Log.d(
                     getString(R.string.tag),
