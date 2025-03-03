@@ -17,7 +17,6 @@ import com.abedatasolutions.ereports.core.models.reports.ReportsQuery
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.CookiesStorage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -72,7 +71,7 @@ class CookieAuthenticationValidatorPluginTest {
 
     @Test
     fun reportsApiEndpointsReturnExceptionIfNotAuthenticated() = runTest {
-        val api = ReportsApiImpl(client, Dispatchers.Main)
+        val api = ReportsApiImpl(client, rule.testDispatcher)
 
         val getReportsResult = runCatching {
             api.getReports(ReportsQuery())

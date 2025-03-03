@@ -15,7 +15,7 @@ import org.junit.runner.Description
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherRule(
-    private val testDispatcher: TestDispatcher = TestDispatcherProvider.dispatcher,
+    val testDispatcher: TestDispatcher = TestDispatcherProvider.dispatcher,
 ) : TestWatcher() {
     override fun starting(description: Description) {
         TestDispatcherProvider.dispatcher = testDispatcher
