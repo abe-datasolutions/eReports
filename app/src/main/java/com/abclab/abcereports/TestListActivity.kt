@@ -10,15 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.ExternalDB.DatabaseAccess
 import com.abclab.abcereports.databinding.TestListBinding
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Parameters
+import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.data.network.test.TestApi
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONArray
+import org.koin.android.ext.android.inject
 
 class TestListActivity : AppCompatActivity() {
     private val binding by lazy {
@@ -27,6 +25,7 @@ class TestListActivity : AppCompatActivity() {
     private val gc by lazy {
         applicationContext as GlobalClass
     }
+    private val api by inject<TestApi>()
     private var listData = ArrayList<DatabaseAccess.TestListData>()
     private var aa: TestListArrayAdapter? = null
     private var mapIndex: MutableMap<String, Int?> = mutableMapOf()
@@ -71,34 +70,15 @@ class TestListActivity : AppCompatActivity() {
 
 
     private fun fetchOnlineVersion() {
-        lifecycleScope.launch {
+        lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
             gc.showProgress(this@TestListActivity, "Checking Online Version", "Please Wait")
-            try {
-                try {
-                    val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).use {
-                            it.submitForm(
-                                url = "https://www.abclab.com/eReportApple/Tests/GetVersion",
-                                formParameters = Parameters.build {
-                                    append("branch", gc.getBranchId().toString())
-                                }
-                            ).bodyAsText().replace("\"", "")
-                        }
-                    }
-                    runCatching {
-                        dbOnlineVersion = result.toInt()
-                    }
-                } catch (e: Exception) {
-                    Log.d(
-                        getString(R.string.tag),
-                        "ERROR $e"
-                    )
-                }
-            } catch (e: Exception) {
-                Log.d(
-                    getString(R.string.tag),
-                    "ERROR $e"
-                )
+            withContext(Dispatchers.IO){
+                dbOnlineVersion = api.getVersion(BuildConfig.BRANCH_ID)
             }
             gc.hideProgress()
             compareVersions()
@@ -109,30 +89,18 @@ class TestListActivity : AppCompatActivity() {
         gc.showProgress(this@TestListActivity, "Loading Data", "Please Wait")
         try {
             try {
-                val result = withContext(Dispatchers.IO){
-                    HttpClient(Android).use {
-                        it.submitForm(
-                            url = "https://www.abclab.com/eReportApple/Tests/GetList",
-                            formParameters = Parameters.build {
-                                append("branch", gc.getBranchId().toString())
-                            }
-                        ).bodyAsText()
-                    }
+                val reports = withContext(Dispatchers.IO){
+                    api.getList(BuildConfig.BRANCH_ID)
                 }
-                if (result.isNotEmpty()) {
-                    db.clearList(gc.getBranchId())
-                    val jArray = JSONArray(result)
-                    for (i in 0 until jArray.length()) {
-                        val jData = jArray.getJSONObject(i)
-                        //	    				TestListData nData = new TestListData();
-                        val nData = DatabaseAccess.TestListData()
-                        nData.Code = jData.getString("Code")
-                        nData.Name = jData.getString("Name")
-                        listData.add(nData)
-                        db.addTestList(gc.getBranchId(), nData.Code, nData.Name)
-                    }
-                    db.setVersion(gc.getBranchId(), dbOnlineVersion)
+                if (reports.isEmpty()) return
+                reports.forEach {
+                    val nData = DatabaseAccess.TestListData()
+                    nData.Code = it.code
+                    nData.Name = it.name
+                    listData.add(nData)
+                    db.addTestList(gc.getBranchId(), nData.Code, nData.Name)
                 }
+                db.setVersion(gc.getBranchId(), dbOnlineVersion)
             } catch (e: Exception) {
                 Log.d(
                     getString(R.string.tag),
@@ -149,7 +117,7 @@ class TestListActivity : AppCompatActivity() {
 
     private suspend fun loadLocalList() = withContext(Dispatchers.IO) {
         try {
-            listData = db.getList(gc.getBranchId())
+            listData = db.getList(BuildConfig.BRANCH_ID)
             Log.d("listDataSize", listData.size.toString())
         } catch (e: Exception) {
             Log.d(
@@ -161,13 +129,9 @@ class TestListActivity : AppCompatActivity() {
 
     private suspend fun compareVersions() {
         val dbLocalVersion = withContext(Dispatchers.IO){
-            db.getVersion(gc.getBranchId())
+            db.getVersion(BuildConfig.BRANCH_ID)
         }
-        loadLocal = if (dbOnlineVersion > dbLocalVersion) {
-            false
-        } else {
-            true
-        }
+        loadLocal = dbOnlineVersion <= dbLocalVersion
         loadList()
     }
 
