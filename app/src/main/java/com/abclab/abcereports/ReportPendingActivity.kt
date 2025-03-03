@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTabHost
 import androidx.lifecycle.lifecycleScope
+import com.abclab.abcereports.PdfDownloader.Companion.viewPdf
 import com.abclab.abcereports.databinding.ReportPendingBinding
 import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
 import com.abedatasolutions.ereports.core.common.logging.Logger
@@ -44,6 +45,7 @@ class ReportPendingActivity : Fragment() {
         requireContext().applicationContext as GlobalClass
     }
     private val api by inject<ReportsApi>()
+    private val downloader by inject<PdfDownloader>()
 
     override fun onCreateContextMenu(
         menu: ContextMenu, v: View,
@@ -70,7 +72,7 @@ class ReportPendingActivity : Fragment() {
 
                 R.id.findRptResultDownload -> {
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(requireActivity())
+                    startDownload(d.reportNo)
                     return true
                 }
 
@@ -115,7 +117,7 @@ class ReportPendingActivity : Fragment() {
                 if (position < listData.size - 1) {
                     val d = listData[position]
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(requireActivity())
+                    startDownload(d.reportNo)
                 }
             }
         return binding.root
@@ -207,6 +209,23 @@ class ReportPendingActivity : Fragment() {
         } else if (listData.isNotEmpty()) {
             aa = ReportArrayAdapter(activity, listData)
             binding.reportPendingLV.adapter = aa
+        }
+    }
+
+    private fun startDownload(accession: String){
+        viewLifecycleOwner.lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
+            gc.showProgress(context, "Downloading File", "Please Wait")
+
+            downloader.downloadPdf(accession)?.let {
+                requireActivity().viewPdf(it)
+            }
+
+            gc.hideProgress()
         }
     }
 }

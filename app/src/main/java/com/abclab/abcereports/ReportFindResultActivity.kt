@@ -16,6 +16,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.abclab.abcereports.PdfDownloader.Companion.viewPdf
 import com.abclab.abcereports.databinding.ReportFindResultBinding
 import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
 import com.abedatasolutions.ereports.core.common.logging.Logger
@@ -45,6 +46,7 @@ class ReportFindResultActivity : AppCompatActivity() {
         applicationContext as GlobalClass
     }
     private val api by inject<ReportsApi>()
+    private val downloader by inject<PdfDownloader>()
     private val listData = ArrayList<ResultData?>()
     private var lastIdx = 0
     private var rowAdded = 0
@@ -79,7 +81,7 @@ class ReportFindResultActivity : AppCompatActivity() {
 
                 R.id.findRptResultDownload -> {
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(this@ReportFindResultActivity)
+                    startDownload(d.reportNo)
                     return true
                 }
 
@@ -123,7 +125,7 @@ class ReportFindResultActivity : AppCompatActivity() {
                 if (position < listData.size - 1) {
                     val d = listData[position]
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(this@ReportFindResultActivity)
+                    startDownload(d.reportNo)
                 }
             }
 
@@ -232,6 +234,23 @@ class ReportFindResultActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
             finish()
+        }
+    }
+
+    private fun startDownload(accession: String){
+        lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
+            gc.showProgress(this@ReportFindResultActivity, "Downloading File", "Please Wait")
+
+            downloader.downloadPdf(accession)?.let {
+                viewPdf(it)
+            }
+
+            gc.hideProgress()
         }
     }
 }
