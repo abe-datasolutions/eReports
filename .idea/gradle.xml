@@ -30,6 +30,7 @@
             <option value="$PROJECT_DIR$/core/common-test" />
             <option value="$PROJECT_DIR$/core/data" />
             <option value="$PROJECT_DIR$/core/data/network" />
+            <option value="$PROJECT_DIR$/core/data/network-platform" />
             <option value="$PROJECT_DIR$/core/errors" />
             <option value="$PROJECT_DIR$/core/errors-network" />
             <option value="$PROJECT_DIR$/core/models" />
