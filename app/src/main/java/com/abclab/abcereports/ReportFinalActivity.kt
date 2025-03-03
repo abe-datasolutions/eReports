@@ -15,17 +15,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTabHost
 import androidx.lifecycle.lifecycleScope
+import com.abclab.abcereports.PdfDownloader.Companion.viewPdf
 import com.abclab.abcereports.databinding.ReportFinalBinding
 import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
 import com.abedatasolutions.ereports.core.common.logging.Logger
 import com.abedatasolutions.ereports.core.data.network.reports.ReportsApi
 import com.abedatasolutions.ereports.core.models.reports.ReportStatus
 import com.abedatasolutions.ereports.core.models.reports.ReportsQuery
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Parameters
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,6 +40,7 @@ class ReportFinalActivity : Fragment() {
         requireContext().applicationContext as GlobalClass
     }
     private val api by inject<ReportsApi>()
+    private val downloader by inject<PdfDownloader>()
 
     override fun onCreateContextMenu(
         menu: ContextMenu, v: View,
@@ -57,10 +54,10 @@ class ReportFinalActivity : Fragment() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         val info = item.menuInfo as AdapterContextMenuInfo
         if (info.position < listData.size - 1) {
-            val d = listData[info.position]
+            val d = listData[info.position] ?: return super.onContextItemSelected(item)
             when (item.itemId) {
                 R.id.findRptResultFindRelated -> {
-                    gc.findReportFilters.PatientName = d!!.patientName
+                    gc.findReportFilters.PatientName = d.patientName
 
                     val tabHost = requireView().parent.parent.parent as FragmentTabHost
                     gc.forceFindResult = true
@@ -69,8 +66,8 @@ class ReportFinalActivity : Fragment() {
                 }
 
                 R.id.findRptResultDownload -> {
-                    gc.reportNo = d!!.reportNo
-                    DownloadFile(requireActivity())
+                    gc.reportNo = d.reportNo
+                    startDownload(d.reportNo)
                     return true
                 }
 
@@ -114,7 +111,7 @@ class ReportFinalActivity : Fragment() {
                 if (position < listData.size - 1) {
                     val d = listData[position]
                     gc.reportNo = d!!.reportNo
-                    DownloadFile(requireActivity())
+                    startDownload(d.reportNo)
                 }
             }
         return binding.root
@@ -196,6 +193,23 @@ class ReportFinalActivity : Fragment() {
         } else {
             Toast.makeText(activity, getString(R.string.noRecordFound), Toast.LENGTH_LONG)
                 .show()
+        }
+    }
+
+    private fun startDownload(accession: String){
+        viewLifecycleOwner.lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
+            gc.showProgress(context, "Downloading File", "Please Wait")
+
+            downloader.downloadPdf(accession)?.let {
+                requireActivity().viewPdf(it)
+            }
+
+            gc.hideProgress()
         }
     }
 

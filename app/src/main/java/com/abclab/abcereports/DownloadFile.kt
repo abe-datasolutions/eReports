@@ -13,6 +13,7 @@ import java.net.URL
 import java.util.Calendar
 import java.util.Date
 
+@Deprecated("Endpoint Updated. Implementation not applicable")
 class DownloadFile internal constructor(private val context: Context) {
     private val gc: GlobalClass = context.applicationContext as GlobalClass
     private var pdfLocURL = ""

@@ -15,6 +15,7 @@ import com.abedatasolutions.ereports.core.data.network.platform.initBaseUrl
 import org.json.JSONArray
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
 import java.util.Locale
 
 class GlobalClass : Application() {
@@ -41,7 +42,15 @@ class GlobalClass : Application() {
             androidContext(this@GlobalClass)
             modules(
                 httpClientModule,
-                apiModule
+                apiModule,
+                module {
+                    single {
+                        PdfDownloader(
+                            gc = get<Context>() as GlobalClass,
+                            api = get()
+                        )
+                    }
+                }
             )
         }
     }
