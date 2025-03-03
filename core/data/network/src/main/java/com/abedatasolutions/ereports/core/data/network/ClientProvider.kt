@@ -38,6 +38,11 @@ internal class ClientProvider(
         }
     }
 
+    /**
+     * Provides an [HttpClient] instance configured for [TestApi].
+     *
+     * This [HttpClient] uses [testBaseUrl] as the [defaultRequest]
+     */
     fun provideTestClient(): HttpClient = HttpClient(Android){
         followRedirects = false
         expectSuccess = true
@@ -50,5 +55,9 @@ internal class ClientProvider(
         defaultRequest {
             url(testBaseUrl.value)
         }
+    }
+
+    companion object {
+        const val TESTS_HTTPCLIENT_MARKER = "testsHttpClient"
     }
 }
