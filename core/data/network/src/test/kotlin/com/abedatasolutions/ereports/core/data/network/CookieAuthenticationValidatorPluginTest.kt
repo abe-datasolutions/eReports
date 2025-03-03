@@ -91,7 +91,7 @@ class CookieAuthenticationValidatorPluginTest {
         assertThat(createPdfResult).isFailure()
         assertThat(createPdfResult.exceptionOrNull()).isEqualTo(AuthException.UnauthorizedException)
 
-        authenticate()
+        authenticate(client)
 
         assertThat(
             runCatching {
@@ -120,24 +120,11 @@ class CookieAuthenticationValidatorPluginTest {
         assertThat(getPatientResult).isFailure()
         assertThat(getPatientResult.exceptionOrNull()).isEqualTo(AuthException.UnauthorizedException)
 
-        authenticate()
+        authenticate(client)
 
         assertThat(
             runCatching {
                 api.getPatientInfo("")
-            }
-        ).isSuccess()
-    }
-
-    private suspend fun authenticate(){
-        val api = AuthApiImpl(client)
-        val loginData = LoginData(
-            "ABCJKT",
-            "ABCJKT",
-        )
-        assertThat(
-            runCatching {
-                api.login(loginData)
             }
         ).isSuccess()
     }
