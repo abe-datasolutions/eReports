@@ -17,14 +17,24 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.databinding.ReportFindResultBinding
+import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
+import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.data.network.reports.ReportsApi
+import com.abedatasolutions.ereports.core.models.reports.FindReportsQuery
+import com.abedatasolutions.ereports.core.models.reports.QueryGender
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.android.ext.android.inject
 import java.util.Date
 
 class ReportFindResultActivity : AppCompatActivity() {
@@ -34,6 +44,7 @@ class ReportFindResultActivity : AppCompatActivity() {
     private val gc by lazy { 
         applicationContext as GlobalClass
     }
+    private val api by inject<ReportsApi>()
     private val listData = ArrayList<ResultData?>()
     private var lastIdx = 0
     private var rowAdded = 0
@@ -120,51 +131,71 @@ class ReportFindResultActivity : AppCompatActivity() {
     }
 
     fun populateData() {
-        lifecycleScope.launch {
+        lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
             gc.showProgress(this@ReportFindResultActivity, "Loading Data", "Please Wait")
             try {
                 try {
-                    val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).use {
-                            it.submitForm(
-                                url = "https://www.abclab.com/eReportApple/Report/FindReport",
-                                formParameters = Parameters.build {
-                                    append("branch", gc.getBranchId().toString())
-                                    append("siteid", gc.siteId!!)
-                                    append("username", gc.userId!!)
-                                    append("hash", gc.hashCode!!)
-                                    append("startrow", lastIdx.toString())
-                                    val filter = gc.findReportFilters
-                                    if (filter.ReportNo.isNotEmpty())
-                                        append("sampid", filter.ReportNo)
-                                    if (filter.PatientName.isNotEmpty())
-                                        append("patname", filter.PatientName)
-                                    if (filter.Gender.isNotEmpty())
-                                        append("patsex", filter.Gender)
-                                    if ((filter.DateFrom + filter.DateTo) > 0) {
-                                        //SimpleDateFormat sf = (SimpleDateFormat) SimpleDateFormat.getDateInstance(SimpleDateFormat.SHORT, Locale.US);
-                                        if (filter.DateFrom > 0) {
-                                            append(
-                                                name = "rptdtfr",
-                                                value = DateFormat.format("MM/dd/yyyy", Date(filter.DateFrom)) as String
-                                            )
-                                        }
-                                        if (filter.DateTo > 0) {
-                                            append(
-                                                name = "rptdtto",
-                                                value = DateFormat.format("MM/dd/yyyy", Date(filter.DateTo)) as String
-                                            )
-                                        }
-                                    }
-                                }
-                            ).bodyAsText()
+                    val startRowIndex = listData.takeUnless {
+                        it.isEmpty()
+                    }?.lastIndex ?: 0
+                    val reports = withContext(Dispatchers.IO){
+                        val filter = gc.findReportFilters
+                        val query = FindReportsQuery(
+                            startRowIndex = startRowIndex,
+                            accession = filter.ReportNo.takeUnless {
+                                it.isNullOrEmpty()
+                            },
+                            patientName = filter.PatientName.takeUnless {
+                                it.isNullOrEmpty()
+                            },
+                            gender = filter.Gender?.runCatching {
+                                QueryGender.valueOf(this)
+                            }?.getOrNull(),
+                            dateFrom = filter.DateFrom.runCatching {
+                                LocalDate.fromEpochDays(this.toInt())
+                            }.getOrElse {
+                                Logger.recordException(it)
+                                null
+                            },
+                            dateTo = filter.DateTo.runCatching {
+                                LocalDate.fromEpochDays(this.toInt())
+                            }.getOrElse {
+                                Logger.recordException(it)
+                                null
+                            },
+                            sortColumn = null
+                        )
+                        api.findReports(query)
+                    }
+                    if (reports.isNotEmpty()){
+                        if (listData.isNotEmpty()) {
+                            listData.removeAt(listData.lastIndex)
                         }
+                        reports.forEach { report ->
+                            val nData = ResultData()
+                            nData.reportNo = report.accession
+                            nData.patientName = report.patientName
+                            nData.gender = report.gender
+                            nData.reportDate = report.reportDate?.toLocalDateTime(TimeZone.currentSystemDefault())?.let {
+                                LocalDatePattern.Soap.formatter.format(it.date)
+                            } ?: ""
+                            nData.status = report.status.name
+                            listData.add(nData)
+                        }
+                        val lData = ResultData()
+                        lData.reportNo = "LAST"
+                        lData.patientName = ""
+                        lData.gender = ""
+                        lData.reportDate = ""
+                        lData.status = ""
+                        listData.add(lData)
                     }
-                    if (result.isNotEmpty()) {
-                        gc.PopulateData(result, listData)
-                    }
-                    rowAdded = listData.size - lastIdx
-                    lastIdx += rowAdded
+                    rowAdded = listData.size - startRowIndex
                 } catch (e: Exception) {
                     Log.d(getString(R.string.tag), "ERROR $e")
                 }
