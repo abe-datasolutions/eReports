@@ -11,9 +11,6 @@ import com.abedatasolutions.ereports.core.models.reports.ReportsQuery
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsChannel
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +38,7 @@ internal class ReportsApiImpl(
 
     override suspend fun createPdf(accession: String): ByteArrayFile? = withContext(dispatcher) {
         try {
-            val response = client.get(Endpoints.FIND_REPORTS_FILTERED){
+            val response = client.get(Endpoints.CREATE_PDF){
                 url {
                     parameters.append(ReportsQueries.PARAM_ACCESSION, accession)
                 }
@@ -52,7 +49,6 @@ internal class ReportsApiImpl(
                     it.mimeType == contentType.contentType
                 }
             } ?: error("Unknown FileType")
-            response.bodyAsChannel()
             val byteArray = response.body<ByteArray>()
 
             ByteArrayFile(byteArray, fileType)
