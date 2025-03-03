@@ -47,7 +47,7 @@ internal class ReportsApiImpl(
             val contentType = response.contentType() ?: error("Unknown File Type")
             val fileType = contentType.let { type ->
                 FileType.entries.find {
-                    it.mimeType == type.contentType
+                    it.mimeType == "${type.contentType}/${type.contentSubtype}"
                 }
             } ?: error("Unknown FileType: $contentType")
             val byteArray = response.body<ByteArray>()
