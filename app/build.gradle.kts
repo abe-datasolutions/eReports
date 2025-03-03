@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.ereports.android.application)
     alias(libs.plugins.ereports.android.build.type)
+    alias(libs.plugins.ereports.android.flavor)
     id(libs.plugins.kotlin.plugin.serialization.get().pluginId)
 }
 android {
@@ -35,6 +36,11 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.sqliteassethelper)
     implementation(projects.shared)
+    implementation(projects.core.data.networkPlatform)
+
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.rules)
     androidTestImplementation(libs.androidx.junit)

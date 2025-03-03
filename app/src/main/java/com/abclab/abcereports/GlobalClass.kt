@@ -8,10 +8,28 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.util.Log
+import com.abedatasolutions.ereports.core.data.network.apiModule
+import com.abedatasolutions.ereports.core.data.network.httpClientModule
+import com.abedatasolutions.ereports.core.data.network.platform.initBaseUrl
 import org.json.JSONArray
+import org.koin.android.ext.koin.androidContext
+import org.koin.core.context.startKoin
 import java.util.Locale
 
 class GlobalClass : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+        initBaseUrl()
+        startKoin {
+            androidContext(this@GlobalClass)
+            modules(
+                httpClientModule,
+                apiModule
+            )
+        }
+    }
+
     /**
      * Authentication Token
      */
