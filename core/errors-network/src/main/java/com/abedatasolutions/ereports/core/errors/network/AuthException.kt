@@ -7,4 +7,10 @@ sealed class AuthException(message: String): NetworkException(message) {
     data object AccountExpiredException: AuthException("Account has expired") {
         private fun readResolve(): Any = AccountExpiredException
     }
+    data object SessionExpiredException: AuthException("Session expired") {
+        private fun readResolve(): Any = SessionExpiredException
+    }
+    data object UnauthorizedException: AuthException("User not logged in") {
+        private fun readResolve(): Any = UnauthorizedException
+    }
 }

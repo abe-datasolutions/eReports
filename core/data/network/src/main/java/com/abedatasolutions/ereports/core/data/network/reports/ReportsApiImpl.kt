@@ -3,6 +3,7 @@ package com.abedatasolutions.ereports.core.data.network.reports
 import com.abedatasolutions.ereports.core.common.logging.Logger
 import com.abedatasolutions.ereports.core.data.network.Endpoints
 import com.abedatasolutions.ereports.core.data.network.reports.ReportsQueries.params
+import com.abedatasolutions.ereports.core.errors.network.AuthException
 import com.abedatasolutions.ereports.core.models.file.ByteArrayFile
 import com.abedatasolutions.ereports.core.models.file.FileType
 import com.abedatasolutions.ereports.core.models.reports.FindReportsQuery
@@ -43,16 +44,18 @@ internal class ReportsApiImpl(
                     parameters.append(ReportsQueries.PARAM_ACCESSION, accession)
                 }
             }
-
-            val fileType = response.contentType()?.let { contentType ->
+            val contentType = response.contentType() ?: error("Unknown File Type")
+            val fileType = contentType.let { type ->
                 FileType.entries.find {
-                    it.mimeType == contentType.contentType
+                    it.mimeType == type.contentType
                 }
-            } ?: error("Unknown FileType")
+            } ?: error("Unknown FileType: $contentType")
             val byteArray = response.body<ByteArray>()
 
             ByteArrayFile(byteArray, fileType)
-        }catch (e: Exception){
+        } catch (e: AuthException){
+            throw e
+        } catch (e: Exception){
             Logger.recordException(e)
             null
         }

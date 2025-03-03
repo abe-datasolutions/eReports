@@ -18,4 +18,11 @@ object Endpoints {
     const val GET_TESTS_VERSION = "$TESTS/GetVersion"
     const val GET_TESTS = "$TESTS/GetList"
     const val GET_TEST_DETAILS = "$TESTS/GetDetails"
+
+    val authWhiteList: List<String> by lazy {
+        listOf(
+            LOGIN,
+            IS_AUTHENTICATED
+        )
+    }
 }
