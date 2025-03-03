@@ -9,15 +9,14 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.databinding.UserLoginBinding
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.Parameters
+import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.data.network.auth.AuthApi
+import com.abedatasolutions.ereports.core.models.auth.LoginData
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import org.koin.android.ext.android.inject
 
 class UserLoginActivity : AppCompatActivity() {
     private val binding by lazy { 
@@ -26,6 +25,7 @@ class UserLoginActivity : AppCompatActivity() {
     private val gc: GlobalClass by lazy {
         applicationContext as GlobalClass
     }
+    private val api by inject<AuthApi>()
 
     override fun onBackPressed() {
         AlertDialog.Builder(this)
@@ -100,66 +100,37 @@ class UserLoginActivity : AppCompatActivity() {
         ).show()
     }
 
-    fun tryLogin(username: String, password: String) {
+    private fun tryLogin(username: String, password: String) {
         //Create request
-        lifecycleScope.launch {
-            siteId = ""
-            branchId = 0
-            hashId = ""
-            gc.userId = binding.usrLogInTxtUsername.text.toString()
-            gc.hashCode = "test"
-            gc.siteId = ""
-            gc.setBranchId(0)
-
-            gc.showProgress(this@UserLoginActivity, "Authenticating", "Please wait...")
-
-            withContext(Dispatchers.IO){
-                try {
-                    try {
-                        val result = HttpClient(Android).use {
-                            it.submitForm(
-                                url = "https://www.abclab.com/eReportApple/Account/Validate",
-                                formParameters = Parameters.build {
-                                    append("userId", username)
-                                    append("password", password)
-                                }
-                            ).bodyAsText()
-                        }
-
-                        if (result.isNotEmpty()) {
-                            val jData = JSONObject(result)
-                            siteId = jData.getString("SiteId")
-                            hashId = jData.getString("Hash")
-                            branchId = jData.getInt("Branch")
-                            Log.d(
-                                "branchID2",
-                                jData.getInt("Branch").toString() + " " + jData.getString("SiteId")
-                            )
-                        }
-                        Unit
-                    } catch (e: Exception) {
-                        Log.d(getString(R.string.tag), "ERROR $e")
-                    }
-                } catch (e: Exception) {
-                    Log.d(getString(R.string.tag), "ERROR $e")
-                }
-            }
-
-            gc.hideProgress()
-
-            if (hashId.isNullOrEmpty()) {
+        lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
                 gc.alert(this@UserLoginActivity, "Access Denied", "Invalid Username/Password")
                 Toast.makeText(
                     this@UserLoginActivity,
                     "Please make sure you have internet connection",
                     Toast.LENGTH_LONG
                 ).show()
-            } else {
-                binding.usrLogInTxtUsername.requestFocus()
-                gc.setBranchId(branchId!!)
-                gc.siteId = siteId
-                gc.hashCode = hashId
+            }
+        ) {
+            gc.showProgress(this@UserLoginActivity, "Authenticating", "Please wait...")
 
+            val loggedIn = withContext(Dispatchers.IO){
+                val loginData = LoginData(
+                    userId = username,
+                    password = password
+                )
+                runCatching {
+                    api.login(loginData)
+                }.onFailure {
+                    throw it
+                }.isSuccess
+            }
+
+            gc.hideProgress()
+
+            if (loggedIn) {
                 startActivity(Intent(this@UserLoginActivity, TabHostActivity::class.java))
                 binding.usrLogInTxtUsername.setText("")
                 binding.usrLogInTxtPassword.setText("")

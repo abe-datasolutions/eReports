@@ -50,22 +50,26 @@ class GlobalClass : Application() {
      * Authentication Token
      */
     @JvmField
+    @Deprecated("Moved to Cookie Authentication")
 	var hashCode: String? = null
     /**
      * Authentication Token
      */
     @JvmField
+    @Deprecated("Moved to Cookie Authentication")
 	var siteId: String? = null
 
     /**
      * UserName
      */
     @JvmField
+    @Deprecated("Moved to Cookie Authentication")
 	var userId: String? = null
     @JvmField
 	var reportNo: String? = null
     @JvmField
 	var testCode: String? = null
+    @Deprecated("Moved to Cookie Authentication")
     var branchIdentifier: Int = 0
 
     @JvmField
