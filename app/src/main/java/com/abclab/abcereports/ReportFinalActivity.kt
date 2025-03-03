@@ -16,14 +16,23 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTabHost
 import androidx.lifecycle.lifecycleScope
 import com.abclab.abcereports.databinding.ReportFinalBinding
+import com.abedatasolutions.ereports.core.common.datetime.LocalDatePattern
+import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.data.network.reports.ReportsApi
+import com.abedatasolutions.ereports.core.models.reports.ReportStatus
+import com.abedatasolutions.ereports.core.models.reports.ReportsQuery
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.koin.android.ext.android.inject
 
 class ReportFinalActivity : Fragment() {
     private lateinit var binding: ReportFinalBinding
@@ -34,6 +43,7 @@ class ReportFinalActivity : Fragment() {
     private val gc: GlobalClass by lazy {
         requireContext().applicationContext as GlobalClass
     }
+    private val api by inject<ReportsApi>()
 
     override fun onCreateContextMenu(
         menu: ContextMenu, v: View,
@@ -111,29 +121,49 @@ class ReportFinalActivity : Fragment() {
     }
 
     fun populateData() {
-        viewLifecycleOwner.lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch(
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.recordException(throwable)
+                gc.hideProgress()
+            }
+        ) {
             gc.showProgress(activity, "Loading Data", "Please Wait")
             try {
                 try {
-                    val result = withContext(Dispatchers.IO){
-                        HttpClient(Android).use {
-                            it.submitForm(
-                                url = "https://www.abclab.com/eReportApple/Report/FindFinals",
-                                formParameters = Parameters.build {
-                                    append("branch", gc.getBranchId().toString())
-                                    append("siteid", gc.siteId!!)
-                                    append("username", gc.userId!!)
-                                    append("hash", gc.hashCode!!)
-                                    append("startrow", lastIdx.toString())
-                                }
-                            ).bodyAsText()
+                    val reports = withContext(Dispatchers.IO){
+                        api.getReports(
+                            ReportsQuery(
+                                startRowIndex = listData.takeUnless {
+                                    it.isEmpty()
+                                }?.lastIndex ?: 0,
+                                maxRows = 10,
+                                status = ReportStatus.FINAL
+                            )
+                        )
+                    }
+                    if (reports.isNotEmpty()){
+                        if (listData.isNotEmpty()) {
+                            listData.removeAt(listData.lastIndex)
                         }
+                        reports.forEach { report ->
+                            val nData = ResultData()
+                            nData.reportNo = report.accession
+                            nData.patientName = report.patientName
+                            nData.gender = report.gender
+                            nData.reportDate = report.reportDate?.toLocalDateTime(TimeZone.currentSystemDefault())?.let {
+                            LocalDatePattern.Soap.formatter.format(it.date)
+                        } ?: ""
+                            nData.status = report.status.name
+                            listData.add(nData)
+                        }
+                        val lData = ResultData()
+                        lData.reportNo = "LAST"
+                        lData.patientName = ""
+                        lData.gender = ""
+                        lData.reportDate = ""
+                        lData.status = ""
+                        listData.add(lData)
                     }
-                    if (result.isNotEmpty()) {
-                        gc.PopulateData(result, listData)
-                    }
-                    rowAdded = listData.size - lastIdx
-                    lastIdx += rowAdded
                 } catch (e: Exception) {
                     Log.d(getString(R.string.tag), "ERROR $e")
                 }
