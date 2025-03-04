@@ -133,12 +133,13 @@ class ReportPendingActivity : Fragment() {
             gc.showProgress(activity, "Loading Data", "Please Wait")
             try {
                 try {
+                    val startRowIndex = listData.takeUnless {
+                        it.isEmpty()
+                    }?.lastIndex ?: 0
                     val reports = withContext(Dispatchers.IO){
                         api.getReports(
                             ReportsQuery(
-                                startRowIndex = listData.takeUnless {
-                                    it.isEmpty()
-                                }?.lastIndex ?: 0,
+                                startRowIndex = startRowIndex,
                                 status = ReportStatus.PARTIAL
                             )
                         )
@@ -166,6 +167,7 @@ class ReportPendingActivity : Fragment() {
                         lData.status = ""
                         listData.add(lData)
                     }
+                    rowAdded = listData.size - startRowIndex
                 } catch (e: Exception) {
                     Log.d(getString(R.string.tag), "ERROR $e")
                 }
