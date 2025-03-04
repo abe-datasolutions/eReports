@@ -14,6 +14,6 @@ data class FindReportsQuery(
 ){
 
     companion object {
-        private const val MAXIMUM_ROWS = 10
+        const val MAXIMUM_ROWS = ReportsQuery.MAXIMUM_ROWS
     }
 }

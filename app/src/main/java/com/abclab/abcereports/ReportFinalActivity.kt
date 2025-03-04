@@ -133,7 +133,6 @@ class ReportFinalActivity : Fragment() {
                                 startRowIndex = listData.takeUnless {
                                     it.isEmpty()
                                 }?.lastIndex ?: 0,
-                                maxRows = 10,
                                 status = ReportStatus.FINAL
                             )
                         )

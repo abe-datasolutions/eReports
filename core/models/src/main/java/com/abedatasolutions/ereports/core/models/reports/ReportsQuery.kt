@@ -7,6 +7,6 @@ data class ReportsQuery(
 ){
 
     companion object {
-        private const val MAXIMUM_ROWS = 10
+        const val MAXIMUM_ROWS = 30
     }
 }
