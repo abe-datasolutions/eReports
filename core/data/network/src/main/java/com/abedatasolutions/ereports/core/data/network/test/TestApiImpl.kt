@@ -11,7 +11,7 @@ import io.ktor.client.request.forms.submitForm
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.Parameters
 
-class TestApiImpl(
+internal class TestApiImpl(
     private val client: HttpClient
 ) : TestApi {
     override suspend fun getVersion(branch: Int): Int = try {

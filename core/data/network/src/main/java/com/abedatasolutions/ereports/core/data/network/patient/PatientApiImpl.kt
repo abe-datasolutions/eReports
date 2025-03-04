@@ -9,7 +9,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-class PatientApiImpl(
+internal class PatientApiImpl(
     private val client: HttpClient
 ) : PatientApi {
     override suspend fun getPatientInfo(accession: String): PatientInfo? = try {
