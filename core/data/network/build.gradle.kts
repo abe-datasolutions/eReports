@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.konan.properties.Properties
 import java.io.FileInputStream
 
@@ -18,29 +19,21 @@ dependencies {
 }
 
 tasks.test {
-    val properties = Properties()
-    properties.load(
-        FileInputStream(
-            rootProject.file("local.properties")
-        )
+    val properties = gradleLocalProperties(
+        rootProject.projectDir,
+        providers
     )
     environment(
         "VALID_USER",
-        properties.getProperty("VALID_USER").toString().also {
-            println("User: $it")
-        }
+        properties.getProperty("VALID_USER").toString()
     )
     environment(
         "VALID_PASSWORD",
-        properties.getProperty("VALID_PASSWORD").toString().also {
-            println("Password: $it")
-        }
+        properties.getProperty("VALID_PASSWORD").toString()
     )
     environment(
         "TEST_BASE_URL",
-        properties.getProperty("TEST_BASE_URL").toString().also {
-            println("Base Url: $it")
-        }
+        properties.getProperty("TEST_BASE_URL").toString()
     )
     useJUnit()
 }
