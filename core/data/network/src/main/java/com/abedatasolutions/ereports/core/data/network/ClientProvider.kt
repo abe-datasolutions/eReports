@@ -4,6 +4,7 @@ import com.abedatasolutions.ereports.core.common.DebugMode
 import com.abedatasolutions.ereports.core.models.serialization.Serialization
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.CookiesStorage
@@ -32,9 +33,15 @@ internal class ClientProvider(
         install(
             CookieAuthenticationValidatorPlugin(cookiesStorage)
         )
+        install(HttpCallLogger.Plugin)
         defaultRequest {
             url(baseUrl.value)
             contentType(ContentType.Application.Json)
+        }
+        HttpResponseValidator {
+            handleResponseExceptionWithRequest { cause, request ->
+                HttpCallLogger.logRequest(request, cause)
+            }
         }
     }
 
@@ -51,9 +58,16 @@ internal class ClientProvider(
         install(ContentNegotiation){
             json(Serialization.json)
         }
+        install(HttpCallLogger.Plugin)
 
         defaultRequest {
             url(testBaseUrl.value)
+        }
+
+        HttpResponseValidator {
+            handleResponseExceptionWithRequest { cause, request ->
+                HttpCallLogger.logRequest(request, cause)
+            }
         }
     }
 
