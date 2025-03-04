@@ -27,6 +27,7 @@ val httpClientModule = module {
 }
 
 val apiModule = module {
+    includes(httpClientModule)
     single<TestApi> {
         TestApiImpl(
             get(qualifier = named(ClientProvider.TESTS_HTTPCLIENT_MARKER))

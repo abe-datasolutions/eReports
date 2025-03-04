@@ -8,9 +8,8 @@ import android.content.Context
 import android.os.Build
 import android.os.Environment
 import android.util.Log
-import com.abedatasolutions.ereports.core.common.logging.Logger
+import com.abedatasolutions.ereports.core.common.platform.initCommon
 import com.abedatasolutions.ereports.core.data.network.apiModule
-import com.abedatasolutions.ereports.core.data.network.httpClientModule
 import com.abedatasolutions.ereports.core.data.network.platform.initBaseUrl
 import org.json.JSONArray
 import org.koin.android.ext.koin.androidContext
@@ -23,25 +22,10 @@ class GlobalClass : Application() {
     override fun onCreate() {
         super.onCreate()
         initBaseUrl()
-        Logger.setLogger(
-            object : Logger{
-                override fun recordException(t: Throwable) {
-                    t.printStackTrace()
-                }
-
-                override fun log(message: String) {
-                    Log.i("LogEvent", message)
-                }
-
-                override fun setCustomKey(key: String, value: String) {
-                    Log.d(key, value)
-                }
-            }
-        )
+        initCommon()
         startKoin {
             androidContext(this@GlobalClass)
             modules(
-                httpClientModule,
                 apiModule,
                 module {
                     single {
