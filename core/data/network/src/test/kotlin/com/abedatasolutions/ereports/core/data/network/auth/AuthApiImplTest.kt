@@ -8,6 +8,7 @@ import assertk.assertions.isNotEmpty
 import assertk.assertions.isSuccess
 import assertk.assertions.isTrue
 import com.abedatasolutions.ereports.core.common.DebugMode
+import com.abedatasolutions.ereports.core.common.logging.Logger
 import com.abedatasolutions.ereports.core.data.network.BaseUrl
 import com.abedatasolutions.ereports.core.data.network.ClientProvider
 import com.abedatasolutions.ereports.core.errors.network.AuthException
@@ -25,7 +26,11 @@ class AuthApiImplTest {
     private lateinit var client: HttpClient
     private lateinit var api: AuthApi
     private lateinit var cookiesStorage: CookiesStorage
-    private val baseUrl: BaseUrl = BaseUrl("https://jkt-dev-inetrep.abclab.com.ph")
+    private val baseUrl: BaseUrl by lazy {
+        BaseUrl(System.getenv("TEST_BASE_URL")).also {
+            Logger.log(it.toString())
+        }
+    }
 
     @Before
     fun setup(){
@@ -51,9 +56,11 @@ class AuthApiImplTest {
         val result = runCatching {
             api.login(
                 LoginData(
-                    userId = "ABCJKT",
-                    password = "ABCJKT"
-                )
+                    userId = System.getenv("VALID_USER"),
+                    password = System.getenv("VALID_PASSWORD")
+                ).also {
+                    Logger.log(it.toString())
+                }
             )
         }
 
@@ -106,8 +113,8 @@ class AuthApiImplTest {
         val result = runCatching {
             api.login(
                 LoginData(
-                    userId = "ABCJKT",
-                    password = "ABCJKT"
+                    userId = System.getenv("VALID_USER"),
+                    password = System.getenv("VALID_PASSWORD")
                 )
             )
         }

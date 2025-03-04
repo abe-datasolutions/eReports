@@ -6,6 +6,7 @@ import assertk.assertions.isFailure
 import assertk.assertions.isNotNull
 import assertk.assertions.isSuccess
 import com.abedatasolutions.ereports.core.common.DebugMode
+import com.abedatasolutions.ereports.core.common.logging.Logger
 import com.abedatasolutions.ereports.core.common.test.MainDispatcherRule
 import com.abedatasolutions.ereports.core.data.network.BaseUrl
 import com.abedatasolutions.ereports.core.data.network.ClientProvider
@@ -33,7 +34,11 @@ class ReportsApiImplTest {
     private lateinit var api: ReportsApi
     private lateinit var client: HttpClient
     private lateinit var cookiesStorage: CookiesStorage
-    private val baseUrl: BaseUrl = BaseUrl("https://jkt-dev-inetrep.abclab.com.ph")
+    private val baseUrl: BaseUrl by lazy {
+        BaseUrl(System.getenv("TEST_BASE_URL")).also {
+            Logger.log(it.toString())
+        }
+    }
 
     @Before
     fun setUp() {

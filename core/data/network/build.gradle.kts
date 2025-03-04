@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.ereports.jvm.library)
 }
@@ -12,4 +15,32 @@ dependencies {
     testImplementation(projects.core.commonTest)
     testImplementation(libs.koin.test)
     testImplementation(libs.koin.test.junit4)
+}
+
+tasks.test {
+    val properties = Properties()
+    properties.load(
+        FileInputStream(
+            rootProject.file("local.properties")
+        )
+    )
+    environment(
+        "VALID_USER",
+        properties.getProperty("VALID_USER").toString().also {
+            println("User: $it")
+        }
+    )
+    environment(
+        "VALID_PASSWORD",
+        properties.getProperty("VALID_PASSWORD").toString().also {
+            println("Password: $it")
+        }
+    )
+    environment(
+        "TEST_BASE_URL",
+        properties.getProperty("TEST_BASE_URL").toString().also {
+            println("Base Url: $it")
+        }
+    )
+    useJUnit()
 }
