@@ -38,7 +38,6 @@ import org.koin.android.ext.android.inject
 class ReportPendingActivity : Fragment() {
     private lateinit var binding: ReportPendingBinding
     private val listData = ArrayList<ResultData?>()
-    private var lastIdx = 0
     private var rowAdded = 0
     private var aa: ReportArrayAdapter? = null
     private val gc: GlobalClass by lazy {
@@ -182,9 +181,9 @@ class ReportPendingActivity : Fragment() {
         aa = ReportArrayAdapter(activity, listData)
         binding.reportPendingLV.adapter = aa
         gc.hideProgress()
-        if (listData.size > 0) {
+        if (listData.isNotEmpty()) {
             if (rowAdded > 0) {
-                binding.reportPendingLV.post { binding.reportPendingLV.setSelection(lastIdx - rowAdded - 1) }
+                binding.reportPendingLV.post { binding.reportPendingLV.setSelection(listData.lastIndex - rowAdded) }
                 Toast.makeText(
                     activity,
                     getString(R.string.menuLongPressOption),
@@ -205,9 +204,9 @@ class ReportPendingActivity : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (lastIdx == 0) {
+        if (listData.isEmpty()) {
             populateData()
-        } else if (listData.isNotEmpty()) {
+        } else {
             aa = ReportArrayAdapter(activity, listData)
             binding.reportPendingLV.adapter = aa
         }

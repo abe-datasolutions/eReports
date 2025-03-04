@@ -49,7 +49,6 @@ class ReportFindResultActivity : AppCompatActivity() {
     private val api by inject<ReportsApi>()
     private val downloader by inject<PdfDownloader>()
     private val listData = ArrayList<ResultData?>()
-    private var lastIdx = 0
     private var rowAdded = 0
     private var aa: ReportArrayAdapter? = null
 
@@ -221,9 +220,9 @@ class ReportFindResultActivity : AppCompatActivity() {
         aa = ReportArrayAdapter(applicationContext, listData)
         binding.reportFindLV.adapter = aa
         gc.hideProgress()
-        if (listData.size > 0) {
+        if (listData.isNotEmpty()) {
             if (rowAdded > 0) {
-                binding.reportFindLV.post { binding.reportFindLV.setSelection(lastIdx - rowAdded - 1) }
+                binding.reportFindLV.post { binding.reportFindLV.setSelection(listData.lastIndex - rowAdded) }
                 Toast.makeText(
                     applicationContext,
                     getString(R.string.menuLongPressOption),
