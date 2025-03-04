@@ -30,6 +30,7 @@ internal class ReportsApiImpl(
     }
 
     override suspend fun findReports(query: FindReportsQuery): List<Report> {
+        Logger.Debug.log("Find Reports: $query")
         return client.get(Endpoints.FIND_REPORTS_FILTERED){
             url {
                 parameters.appendAll(query.params)

@@ -32,6 +32,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -158,15 +159,23 @@ class ReportFindResultActivity : AppCompatActivity() {
                             gender = filter.Gender?.runCatching {
                                 QueryGender.valueOf(this)
                             }?.getOrNull(),
-                            dateFrom = filter.DateFrom.runCatching {
-                                LocalDate.fromEpochDays(this.toInt())
-                            }.getOrElse {
+                            dateFrom = filter.DateFrom.takeIf {
+                                it > 0L
+                            }?.runCatching {
+                                Instant.fromEpochMilliseconds(this).toLocalDateTime(
+                                    TimeZone.currentSystemDefault()
+                                ).date
+                            }?.getOrElse {
                                 Logger.recordException(it)
                                 null
                             },
-                            dateTo = filter.DateTo.runCatching {
-                                LocalDate.fromEpochDays(this.toInt())
-                            }.getOrElse {
+                            dateTo = filter.DateTo.takeIf {
+                                it > 0L
+                            }?.runCatching {
+                                Instant.fromEpochMilliseconds(this).toLocalDateTime(
+                                    TimeZone.currentSystemDefault()
+                                ).date
+                            }?.getOrElse {
                                 Logger.recordException(it)
                                 null
                             },
